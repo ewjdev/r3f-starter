@@ -1,15 +1,17 @@
 import { Suspense } from 'react'
-import { useGLTF } from '@react-three/drei/core'
+import { CameraControls, useGLTF } from '@react-three/drei/core'
 import { Mask, useMask, RoundedBox, Float } from '@react-three/drei/core'
 import { PivotControls } from '@react-three/drei/web'
 import { BufferGeometry, Mesh } from 'three'
+import Loading from '@/components/canvas/Loading'
 
 export default function App(props) {
   return (
     <group {...props}>
       <directionalLight position={[1, 2, 1.5]} intensity={0.5} castShadow />
       <hemisphereLight intensity={1.5} groundColor='red' />
-      <Suspense fallback={null}>
+      <CameraControls makeDefault dollyToCursor minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
+      <Suspense>
         <PivotControls
           scale={1.5}
           rotation={[0, 0, Math.PI]}
