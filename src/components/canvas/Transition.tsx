@@ -1,44 +1,86 @@
 'use client'
 
-import { memo, useRef } from 'react'
+import { memo, useRef, useEffect, use } from 'react'
 import { EffectComposer, Pixelation, DepthOfField } from '@react-three/postprocessing'
 import { useAppStore } from '@/store'
 import { useFrame } from '@react-three/fiber'
-import * as THREE from 'three'
+import { useSpring } from '@react-spring/three'
+import { useParams } from 'next/navigation'
 
-export const Transition = memo(() => {
+/**
+ * Configuration for the Transition effect.
+ * Tweak these values to adjust the feel and performance of the animation.
+ */
+const TRANSITION_CONFIG = {
+  // Target granularity when transition is active (pixelated)
+  activeTarget: 20,
+  // Target granularity when transition is inactive (clear)
+  inactiveTarget: 0,
+  // Threshold below which the effect is disabled entirely for performance
+  disableThreshold: 1.05,
+  delay: 2500,
+  // Spring physics configuration
+  spring: {
+    mass: 1,
+    tension: 180,
+    friction: 30,
+    precision: 0.001,
+  },
+  // Enable to log transition states and values
+  debug: false,
+}
+
+export const Transition = memo(({ children }: { children: React.ReactNode }) => {
   const transitionState = useAppStore((state) => state.transitionState)
+  const { id } = useParams<{ id: string }>()
+  const isSubPage = !!id
+  console.log({ isSubPage, id })
   // @ts-ignore
   const pixelationRef = useRef(null)
-  const granularity = useRef(1)
 
-  useFrame((state, delta) => {
+  const isTransitingOut = transitionState === 'out'
+
+  // Debugging
+  useEffect(() => {
+    if (TRANSITION_CONFIG.debug) {
+      console.log('[Transition] State changed:', transitionState)
+    }
+  }, [transitionState])
+
+  const { granularity } = useSpring({
+    granularity: isTransitingOut ? TRANSITION_CONFIG.activeTarget : TRANSITION_CONFIG.inactiveTarget,
+    config: TRANSITION_CONFIG.spring,
+  })
+
+  useFrame(() => {
     if (pixelationRef.current) {
-      // Target 0 means "no pixelation" (disabled), but we interpolate to a safe value
-      // We'll use 1 as the minimum "active" granularity (1 pixel size)
-      const target = transitionState === 'out' ? 20 : 1
+      const currentGranularity = granularity.get()
 
-      // Smoothly interpolate using damp for frame-rate independence
-      // Increasing speed to 8 makes it snappier
-      granularity.current = THREE.MathUtils.damp(granularity.current, target, 2, delta)
-
-      // Disable the effect when it's effectively at the minimum to save performance
-      // and avoid any shader artifacts at low values
-      if (granularity.current <= 1.05 && transitionState !== 'out') {
-        pixelationRef.current.granularity = 1
-        pixelationRef.current.enabled = false
-        granularity.current = 1
+      // Performance optimization: Disable the effect when close to 1 (or 0)
+      // This saves GPU resources on mobile when the effect isn't visible
+      if (currentGranularity < TRANSITION_CONFIG.disableThreshold && !isTransitingOut) {
+        if (pixelationRef.current.enabled) {
+          pixelationRef.current.enabled = false
+          pixelationRef.current.granularity = 1
+          if (TRANSITION_CONFIG.debug) console.log('[Transition] Effect disabled')
+        }
       } else {
-        pixelationRef.current.enabled = true
-        pixelationRef.current.granularity = granularity.current
+        if (!pixelationRef.current.enabled) {
+          pixelationRef.current.enabled = true
+          if (TRANSITION_CONFIG.debug) console.log('[Transition] Effect enabled')
+        }
+        // Ensure minimum granularity is 1 to avoid invalid values if the effect doesn't handle 0
+        pixelationRef.current.granularity = Math.max(1, currentGranularity)
       }
     }
   })
 
   return (
-    <EffectComposer enabled={true}>
-      <DepthOfField focusDistance={2} focalLength={0.02} bokehScale={9} height={256} />
-      <Pixelation ref={pixelationRef} granularity={1} />
+    <EffectComposer autoClear={false}>
+      {!isSubPage && !isTransitingOut && (
+        <DepthOfField focusDistance={30} focalLength={0.01} bokehScale={8} height={256} />
+      )}
+      <Pixelation ref={pixelationRef} granularity={0} />
     </EffectComposer>
   )
 })

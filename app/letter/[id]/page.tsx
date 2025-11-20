@@ -1,10 +1,12 @@
 'use client'
 
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import { useSpring, animated } from '@react-spring/web'
 import { useAppStore } from '@/store'
 import { Three } from '@/helpers/components/Three'
+import Loading from '@/components/canvas/Loading'
 // import { Three } from '@/helpers/components/Three'
 // import { useAppStore } from '@/store'
 // import { PerspectiveCamera, Environment, CameraControls } from '@react-three/drei'
@@ -34,6 +36,13 @@ export default function LetterPage() {
   const letter = Array.isArray(id) ? id[0] : id
   const Component = Components[letter?.toLowerCase() as keyof typeof Components] || Basic
 
+  const [exiting, setExiting] = useState(false)
+  const springs = useSpring({
+    from: { x: '100vw' },
+    to: { x: exiting ? '-400px' : '0vw' },
+    config: { mass: 1, tension: 170, friction: 26, precision: 0.0001 },
+  })
+
   useEffect(() => {
     // Trigger 'in' transition on mount
     setTimeout(() => {
@@ -42,6 +51,7 @@ export default function LetterPage() {
   }, [endTransition])
 
   const handleBack = () => {
+    setExiting(true)
     startTransition(null)
     setTimeout(() => {
       router.push('/')
@@ -51,15 +61,16 @@ export default function LetterPage() {
   return (
     <>
       <div className='absolute top-8 left-8 z-100 pointer-events-auto'>
-        <button
+        <animated.button
+          style={springs}
           onClick={handleBack}
           className='cursor-pointer bg-white/90 backdrop-blur-sm text-black px-6 py-2 rounded-full font-bold transition-colors'
         >
           ← Back
-        </button>
+        </animated.button>
 
         <Three>
-          <Suspense fallback={null}>
+          <Suspense>
             <Component />
           </Suspense>
         </Three>

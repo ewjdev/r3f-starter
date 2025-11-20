@@ -13,7 +13,9 @@ interface AppState {
 export const useAppStore = create<AppState>((set) => ({
   transitionState: 'idle',
   targetLetter: null,
-  startTransition: (letter) => set({ transitionState: 'out', targetLetter: letter }),
+  startTransition: (letter: string) => {
+    set({ transitionState: 'out', targetLetter: letter })
+  },
   endTransition: () => set({ transitionState: 'in' }),
   resetTransition: () => set({ transitionState: 'idle', targetLetter: null }),
 }))

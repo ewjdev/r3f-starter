@@ -34,6 +34,7 @@ export function Letter({ char, children, stencilBuffer = false, ...props }: Lett
   const handleClick = async (e: any) => {
     e.stopPropagation()
     // Trigger transition out
+
     startTransition(char)
 
     if (main.current && controls) {

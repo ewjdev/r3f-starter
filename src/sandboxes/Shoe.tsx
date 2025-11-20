@@ -4,6 +4,7 @@ import { useGLTF } from '@react-three/drei/core'
 import { Environment } from '@react-three/drei/core'
 import { PivotControls } from '@react-three/drei/web'
 import { BufferGeometry, Mesh } from 'three'
+import Loading from '@/components/canvas/Loading'
 
 export default function App(props) {
   return (
@@ -11,7 +12,7 @@ export default function App(props) {
       <ambientLight intensity={0.2} />
       <spotLight intensity={0.5} angle={0.1} penumbra={1} position={[10, 15, 10]} />
       <PivotControls depthTest={false} anchor={[0, 0, 0]}>
-        <Suspense fallback={null}>
+        <Suspense>
           <Shoe />
         </Suspense>
       </PivotControls>

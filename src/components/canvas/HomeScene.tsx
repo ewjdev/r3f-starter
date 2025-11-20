@@ -11,7 +11,8 @@ import Shoe from '@/sandboxes/Shoe'
 import Stencil from '@/sandboxes/Stencil'
 import Rocket from '@/sandboxes/Rocket'
 import { useAppStore } from '@/store'
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
+import Loading from './Loading'
 
 export default function HomeScene() {
   const resetTransition = useAppStore((state) => state.resetTransition)
@@ -58,24 +59,26 @@ export default function HomeScene() {
       </Physics>
 
       {/** Environment (for reflections) */}
-      <Environment files='https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr' resolution={256}>
-        {/** On top of the HDRI we add some rectangular and circular shapes for nicer reflections */}
-        <group rotation={[-Math.PI / 3, 0, 0]}>
-          <Lightformer intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
-          {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (
-            <Lightformer
-              key={i}
-              form='circle'
-              intensity={4}
-              rotation={[Math.PI / 2, 0, 0]}
-              position={[x, 4, i * 4]}
-              scale={[4, 1, 1]}
-            />
-          ))}
-          <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={[50, 2, 1]} />
-          <Lightformer intensity={2} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={[50, 2, 1]} />
-        </group>
-      </Environment>
+      <Suspense>
+        <Environment files='https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr' resolution={256}>
+          {/** On top of the HDRI we add some rectangular and circular shapes for nicer reflections */}
+          <group rotation={[-Math.PI / 3, 0, 0]}>
+            <Lightformer intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
+            {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (
+              <Lightformer
+                key={i}
+                form='circle'
+                intensity={4}
+                rotation={[Math.PI / 2, 0, 0]}
+                position={[x, 4, i * 4]}
+                scale={[4, 1, 1]}
+              />
+            ))}
+            <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={[50, 2, 1]} />
+            <Lightformer intensity={2} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={[50, 2, 1]} />
+          </group>
+        </Environment>
+      </Suspense>
 
       {/** Contact shadows for naive soft shadows */}
       <ContactShadows smooth={false} scale={100} position={[0, -5.05, 0]} blur={0.5} opacity={0.75} />

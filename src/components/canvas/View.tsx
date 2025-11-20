@@ -5,7 +5,7 @@ import { OrbitControls, PerspectiveCamera, View as ViewImpl } from '@react-three
 import { Three } from '@/helpers/components/Three'
 
 export const Common = ({ color }: { color?: string }) => (
-  <Suspense fallback={null}>
+  <Suspense>
     {color && <color attach='background' args={[color]} />}
     <ambientLight />
     <pointLight position={[20, 30, 10]} intensity={3} decay={0.2} />
