@@ -24,7 +24,7 @@ export default function App(props) {
           </Mask>
         </PivotControls>
         <Float floatIntensity={4} rotationIntensity={0} speed={4}>
-          <Atom invert={false} scale={1.5} />
+          <Atom invert scale={1.5} />
         </Float>
         <Box color='#EAC435' args={[1, 5, 1]} rotation-y={Math.PI / 4} position={[0, 0, -2]} />
         <Box color='#03CEA4' args={[2, 2, 2]} position={[-2, 0, -2]} />
