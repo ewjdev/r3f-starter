@@ -1,82 +1,172 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-import { Suspense } from 'react'
+import { useRef, ReactNode } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import {
+  Text3D,
+  Center,
+  Preload,
+  Lightformer,
+  Environment,
+  CameraControls,
+  RenderTexture,
+  ContactShadows,
+  MeshTransmissionMaterial,
+} from '@react-three/drei'
+import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier'
+import * as THREE from 'three'
 
-const Logo = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
-const Dog = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Dog), { ssr: false })
-const Duck = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Duck), { ssr: false })
-const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
-  ssr: false,
-  loading: () => (
-    <div className='flex h-96 w-full flex-col items-center justify-center'>
-      <svg className='-ml-1 mr-3 h-5 w-5 animate-spin text-black' fill='none' viewBox='0 0 24 24'>
-        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
-        <path
-          className='opacity-75'
-          fill='currentColor'
-          d='M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-        />
-      </svg>
-    </div>
-  ),
-})
-const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
+import Turtle from '@/sandboxes/Turtle'
+import Basic from '@/sandboxes/Basic'
+import PingPong from '@/sandboxes/PingPong'
+import Shoe from '@/sandboxes/Shoe'
+import Stencil from '@/sandboxes/Stencil'
+import Rocket from '@/sandboxes/Rocket'
 
-export default function Page() {
+export default function App() {
   return (
-    <>
-      <div className='mx-auto flex w-full flex-col flex-wrap items-center md:flex-row  lg:w-4/5'>
-        {/* jumbo */}
-        <div className='flex w-full flex-col items-start justify-center p-12 text-center md:w-2/5 md:text-left'>
-          <p className='w-full uppercase'>Next + React Three Fiber</p>
-          <h1 className='my-4 text-5xl font-bold leading-tight'>Next 3D Starter</h1>
-          <p className='mb-8 text-2xl leading-normal'>A minimalist starter for React, React-three-fiber and Threejs.</p>
-        </div>
+    <div className='h-screen w-full'>
+      <Canvas dpr={[1.5, 2]} camera={{ position: [-20, 40, 30], fov: 45, near: 1, far: 300 }}>
+        {/** The physics world */}
+        <Physics gravity={[0, -60, 0]}>
+          <Letter char='P' position={[1, 50, -1]} rotation={[0, 0, 0]}>
+            {/** The sandboxes dropped into here have no idea what's going to happen.
+                 For all intents and purposes they're just self-contained components.  */}
+            <Turtle />
+          </Letter>
+          <Letter char='S' position={[2, 60, -2]} rotation={[4, 5, 6]}>
+            <Shoe scale={5} />
+          </Letter>
+          <Letter char='T' position={[3, 70, 2]} rotation={[7, 8, 9]}>
+            <Rocket position={[-1, -1, 0]} scale={0.6} />
+          </Letter>
+          <Letter char='A' position={[-1, 80, 3]} rotation={[10, 11, 12]}>
+            <Basic scale={3} />
+          </Letter>
+          <Letter char='R' position={[-2, 90, 2]} rotation={[13, 14, 15]}>
+            <PingPong />
+          </Letter>
+          <Letter char='T' position={[-3, 100, -3]} rotation={[16, 17, 18]} stencilBuffer>
+            <Stencil scale={2} />
+          </Letter>
+          <Letter char='E' position={[-3, 100, -3]} rotation={[16, 17, 18]} stencilBuffer>
+            <Stencil scale={2} />
+          </Letter>
+          <Letter char='R' position={[-3, 100, -3]} rotation={[16, 17, 18]} stencilBuffer>
+            <Stencil scale={2} />
+          </Letter>
+          {/** Invisible walls */}
+          <RigidBody type='fixed'>
+            <CuboidCollider position={[0, -6, 0]} args={[100, 1, 100]} />
+            <CuboidCollider position={[0, 0, -30]} args={[30, 100, 1]} />
+            <CuboidCollider position={[0, 0, 10]} args={[30, 100, 1]} />
+            <CuboidCollider position={[-30, 0, 0]} args={[1, 100, 30]} />
+            <CuboidCollider position={[30, 0, 0]} args={[1, 100, 30]} />
+          </RigidBody>
+        </Physics>
+        {/** Environment (for reflections) */}
+        <Environment files='https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/dancing_hall_1k.hdr' resolution={1024}>
+          {/** On top of the HDRI we add some rectangular and circular shapes for nicer reflections */}
+          <group rotation={[-Math.PI / 3, 0, 0]}>
+            <Lightformer intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
+            {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (
+              <Lightformer
+                key={i}
+                form='circle'
+                intensity={4}
+                rotation={[Math.PI / 2, 0, 0]}
+                position={[x, 4, i * 4]}
+                scale={[4, 1, 1]}
+              />
+            ))}
+            <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={[50, 2, 1]} />
+            <Lightformer intensity={2} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={[50, 2, 1]} />
+          </group>
+        </Environment>
+        {/** Contact shadows for naive soft shadows */}
+        <ContactShadows smooth={false} scale={100} position={[0, -5.05, 0]} blur={0.5} opacity={0.75} />
+        {/** Yomotsu/camera-controls, a better replacement for OrbitControls */}
+        <CameraControls makeDefault dollyToCursor minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
+        {/** Makes sure everything is processed and GPU uploaded before Threejs "sees" it */}
+        <Preload all />
+      </Canvas>
+    </div>
+  )
+}
 
-        <div className='w-full text-center md:w-3/5'>
-          <View className='flex h-96 w-full flex-col items-center justify-center'>
-            <Suspense fallback={null}>
-              <Logo route='/blob' scale={0.6} position={[0, 0, 0]} />
-              <Common />
-            </Suspense>
-          </View>
-        </div>
-      </div>
+interface LetterProps {
+  char: string
+  children?: ReactNode
+  stencilBuffer?: boolean
+  position?: [number, number, number]
+  rotation?: [number, number, number]
+}
 
-      <div className='mx-auto flex w-full flex-col flex-wrap items-center p-12 md:flex-row  lg:w-4/5'>
-        {/* first row */}
-        <div className='relative h-48 w-full py-6 sm:w-1/2 md:my-12 md:mb-40'>
-          <h2 className='mb-3 text-3xl font-bold leading-none text-gray-800'>Events are propagated</h2>
-          <p className='mb-8 text-gray-600'>Drag, scroll, pinch, and rotate the canvas to explore the 3D scene.</p>
-        </div>
-        <div className='relative my-12 h-48 w-full py-6 sm:w-1/2 md:mb-40'>
-          <View orbit className='relative h-full  sm:h-48 sm:w-full'>
-            <Suspense fallback={null}>
-              <Dog scale={2} position={[0, -1.6, 0]} rotation={[0.0, -0.3, 0]} />
-              <Common color={'lightpink'} />
-            </Suspense>
-          </View>
-        </div>
-        {/* second row */}
-        <div className='relative my-12 h-48 w-full py-6 sm:w-1/2 md:mb-40'>
-          <View orbit className='relative h-full animate-bounce sm:h-48 sm:w-full'>
-            <Suspense fallback={null}>
-              <Duck route='/blob' scale={2} position={[0, -1.6, 0]} />
-              <Common color={'lightblue'} />
-            </Suspense>
-          </View>
-        </div>
-        <div className='w-full p-6 sm:w-1/2'>
-          <h2 className='mb-3 text-3xl font-bold leading-none text-gray-800'>Dom and 3D are synchronized</h2>
-          <p className='mb-8 text-gray-600'>
-            3D Divs are renderer through the View component. It uses gl.scissor to cut the viewport into segments. You
-            tie a view to a tracking div which then controls the position and bounds of the viewport. This allows you to
-            have multiple views with a single, performant canvas. These views will follow their tracking elements,
-            scroll along, resize, etc.
-          </p>
-        </div>
-      </div>
-    </>
+function Letter({ char, children, stencilBuffer = false, ...props }: LetterProps) {
+  const main = useRef<THREE.Group>(null)
+  const contents = useRef<THREE.Group>(null)
+  const events = useThree((state) => state.events)
+  const controls = useThree(
+    (state) => state.controls as unknown as { fitToBox: (obj: THREE.Object3D, animate: boolean) => void },
+  )
+
+  // The letters contents are moved to its whereabouts in world coordinates
+  useFrame(() => {
+    if (contents.current && main.current) {
+      contents.current.matrix.copy(main.current.matrixWorld)
+    }
+  })
+
+  return (
+    /** A physics rigid body */
+    <RigidBody restitution={0.1} colliders='cuboid' {...props}>
+      {/** Center each letter */}
+      <Center ref={main}>
+        <Text3D
+          bevelEnabled
+          onDoubleClick={(e) => {
+            e.stopPropagation()
+            if (main.current && controls) controls.fitToBox(main.current, true)
+          }}
+          font='https://threejs.org/examples/fonts/helvetiker_bold.typeface.json'
+          smooth={1}
+          scale={0.125}
+          size={80}
+          height={4}
+          curveSegments={10}
+          bevelThickness={10}
+          bevelSize={2}
+          bevelOffset={0}
+          bevelSegments={5}
+        >
+          {char}
+          <MeshTransmissionMaterial
+            clearcoat={1}
+            samples={3}
+            thickness={40}
+            chromaticAberration={0.25}
+            anisotropy={0.4}
+          >
+            {/** Render a portalled scene into the "buffer" attribute of transmission material, which is a texture.
+                 Since we're moving the contents with the letter shape in world space we take the standard event compute. */}
+            <RenderTexture
+              attach='buffer'
+              stencilBuffer={stencilBuffer}
+              width={512}
+              height={512}
+              compute={events.compute}
+            >
+              {/** Everything in here is self-contained, behaves like a regular canvas, but we're *in* the texture */}
+              <color attach='background' args={['#4899c9']} />
+              <group ref={contents} matrixAutoUpdate={false}>
+                {/** Drop the children in here, this is where the sandboxes land. */}
+                {children}
+              </group>
+              <Preload all />
+            </RenderTexture>
+          </MeshTransmissionMaterial>
+        </Text3D>
+      </Center>
+    </RigidBody>
   )
 }
