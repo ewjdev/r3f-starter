@@ -12,18 +12,21 @@
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.0",
+    "@react-three/postprocessing": "^3.0.4",
     "@react-three/rapier": "^2.2.0",
     "glsl-random": "^0.0.5",
     "next": "^16.0.3",
+    "postprocessing": "^6.38.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "three": "^0.181.0",
     "three-stdlib": "^2.36.1",
-    "tunnel-rat": "^0.1.2"
+    "tunnel-rat": "^0.1.2",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.17",
     "@next/bundle-analyzer": "^14.2.33",
+    "@tailwindcss/postcss": "^4.1.17",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.0",
     "@types/three": "^0.181.0",

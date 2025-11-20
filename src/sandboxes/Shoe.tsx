@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { Suspense, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei/core'
 import { Environment } from '@react-three/drei/core'
@@ -11,7 +11,9 @@ export default function App(props) {
       <ambientLight intensity={0.2} />
       <spotLight intensity={0.5} angle={0.1} penumbra={1} position={[10, 15, 10]} />
       <PivotControls depthTest={false} anchor={[0, 0, 0]}>
-        <Shoe />
+        <Suspense fallback={null}>
+          <Shoe />
+        </Suspense>
       </PivotControls>
       <Environment preset='city' />
     </group>

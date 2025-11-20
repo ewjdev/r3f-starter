@@ -4,15 +4,20 @@ import { Canvas } from '@react-three/fiber'
 import { Preload } from '@react-three/drei'
 import { r3f } from '@/helpers/global'
 import * as THREE from 'three'
+import { Transition } from './Transition'
 
 export default function Scene({ ...props }) {
   // Everything defined in here will persist between route changes, only children are swapped
   return (
-    <Canvas {...props}
-      onCreated={(state) => (state.gl.toneMapping = THREE.AgXToneMapping)}
+    <Canvas
+      className='pointer-events-auto'
+      {...props}
+      dpr={[1.5, 2]}
+      camera={{ position: [-20, 40, 30], fov: 45, near: 1, far: 300 }}
     >
       {/* @ts-ignore */}
       <r3f.Out />
+      <Transition />
       <Preload all />
     </Canvas>
   )
