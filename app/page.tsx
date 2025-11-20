@@ -29,11 +29,6 @@ export default function App() {
       <Canvas dpr={[1.5, 2]} camera={{ position: [-20, 40, 30], fov: 45, near: 1, far: 300 }}>
         {/** The physics world */}
         <Physics gravity={[0, -60, 0]}>
-          <Letter char='P' position={[1, 50, -1]} rotation={[0, 0, 0]}>
-            {/** The sandboxes dropped into here have no idea what's going to happen.
-                 For all intents and purposes they're just self-contained components.  */}
-            <Turtle />
-          </Letter>
           <Letter char='S' position={[2, 60, -2]} rotation={[4, 5, 6]}>
             <Shoe scale={5} />
           </Letter>
@@ -47,13 +42,13 @@ export default function App() {
             <PingPong />
           </Letter>
           <Letter char='T' position={[-3, 100, -3]} rotation={[16, 17, 18]} stencilBuffer>
-            <Stencil scale={2} />
+            <Stencil scale={1} />
           </Letter>
-          <Letter char='E' position={[-3, 100, -3]} rotation={[16, 17, 18]} stencilBuffer>
-            <Stencil scale={2} />
+          <Letter char='E' position={[-3, 100, -3]} rotation={[16, 17, 18]}>
+            <Stencil scale={1} />
           </Letter>
-          <Letter char='R' position={[-3, 100, -3]} rotation={[16, 17, 18]} stencilBuffer>
-            <Stencil scale={2} />
+          <Letter char='R' position={[-3, 100, -3]} rotation={[16, 17, 18]}>
+            <Stencil scale={3} />
           </Letter>
           {/** Invisible walls */}
           <RigidBody type='fixed'>
@@ -154,7 +149,12 @@ function Letter({ char, children, stencilBuffer = false, ...props }: LetterProps
               stencilBuffer={stencilBuffer}
               width={512}
               height={512}
-              compute={events.compute}
+              compute={(event, state, previous) => {
+                if (events.compute) {
+                  events.compute(event, state, previous)
+                }
+                return false
+              }}
             >
               {/** Everything in here is self-contained, behaves like a regular canvas, but we're *in* the texture */}
               <color attach='background' args={['#4899c9']} />
