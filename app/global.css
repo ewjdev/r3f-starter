@@ -1,1 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Stack+Sans+Notch:wght@200..700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-stack: "Stack Sans Notch", sans-serif;
+}

@@ -4,8 +4,6 @@ import { useGLTF } from '@react-three/drei/core'
 import { Environment } from '@react-three/drei/core'
 import { PivotControls } from '@react-three/drei/web'
 import { BufferGeometry, Mesh } from 'three'
-import Loading from '@/components/canvas/Loading'
-
 export default function App(props) {
   return (
     <group {...props}>

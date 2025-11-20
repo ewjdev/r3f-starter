@@ -12,8 +12,6 @@ import Stencil from '@/sandboxes/Stencil'
 import Rocket from '@/sandboxes/Rocket'
 import { useAppStore } from '@/store'
 import { Suspense, useEffect } from 'react'
-import Loading from './Loading'
-
 export default function HomeScene() {
   const resetTransition = useAppStore((state) => state.resetTransition)
   useEffect(() => {

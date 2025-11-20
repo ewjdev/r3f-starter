@@ -39,8 +39,8 @@ export default function LetterPage() {
   const [exiting, setExiting] = useState(false)
   const springs = useSpring({
     from: { x: '100vw' },
-    to: { x: exiting ? '-400px' : '0vw' },
-    config: { mass: 1, tension: 170, friction: 26, precision: 0.0001 },
+    to: { x: exiting ? '-100px' : '0vw' },
+    config: { mass: 3, tension: 170, friction: 26, precision: 0.0001 },
   })
 
   useEffect(() => {
