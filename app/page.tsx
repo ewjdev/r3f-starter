@@ -5,7 +5,6 @@ import { Suspense } from 'react'
 import HomeScene from '@/components/canvas/HomeScene'
 
 export default function Page() {
-  console.count('Page rendered')
   return (
     <div>
       {/* 
