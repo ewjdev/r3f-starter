@@ -18,7 +18,6 @@ const TRANSITION_CONFIG = {
   inactiveTarget: 0,
   // Threshold below which the effect is disabled entirely for performance
   disableThreshold: 1.05,
-  delay: 2500,
   // Spring physics configuration
   spring: {
     mass: 1,
@@ -30,6 +29,10 @@ const TRANSITION_CONFIG = {
   debug: false,
 }
 
+const DEFAULT_FOCAL_LENGTH = 0.01
+const DEFAULT_FOCUS_DISTANCE = 30
+const DEFAULT_BOKEH_SCALE = 8
+
 export const Transition = memo(({ children }: { children: React.ReactNode }) => {
   const transitionState = useAppStore((state) => state.transitionState)
   const { id } = useParams<{ id: string }>()
@@ -37,6 +40,7 @@ export const Transition = memo(({ children }: { children: React.ReactNode }) => 
   console.log({ isSubPage, id })
   // @ts-ignore
   const pixelationRef = useRef(null)
+  const depthOfFieldRef = useRef(null)
 
   const isTransitingOut = transitionState === 'out'
 
@@ -48,6 +52,7 @@ export const Transition = memo(({ children }: { children: React.ReactNode }) => 
   }, [transitionState])
 
   const { granularity } = useSpring({
+    delay: 1000,
     granularity: isTransitingOut ? TRANSITION_CONFIG.activeTarget : TRANSITION_CONFIG.inactiveTarget,
     config: TRANSITION_CONFIG.spring,
   })
@@ -73,13 +78,28 @@ export const Transition = memo(({ children }: { children: React.ReactNode }) => 
         pixelationRef.current.granularity = Math.max(1, currentGranularity)
       }
     }
+    if (depthOfFieldRef.current) {
+      if (!isSubPage && !isTransitingOut) {
+        depthOfFieldRef.current.focalLength = DEFAULT_FOCUS_DISTANCE
+        depthOfFieldRef.current.focusDistance = DEFAULT_FOCUS_DISTANCE
+        depthOfFieldRef.current.bokehScale = 0
+      } else {
+        depthOfFieldRef.current.focalLength = DEFAULT_FOCAL_LENGTH
+        depthOfFieldRef.current.focusDistance = DEFAULT_FOCUS_DISTANCE
+        depthOfFieldRef.current.bokehScale = DEFAULT_BOKEH_SCALE / 100
+      }
+    }
   })
 
   return (
     <EffectComposer autoClear={false}>
-      {!isSubPage && !isTransitingOut && (
-        <DepthOfField focusDistance={30} focalLength={0.01} bokehScale={8} height={256} />
-      )}
+      <DepthOfField
+        ref={depthOfFieldRef}
+        focusDistance={DEFAULT_FOCUS_DISTANCE}
+        focalLength={DEFAULT_FOCAL_LENGTH}
+        bokehScale={DEFAULT_BOKEH_SCALE}
+        height={256}
+      />
       <Pixelation ref={pixelationRef} granularity={0} />
     </EffectComposer>
   )

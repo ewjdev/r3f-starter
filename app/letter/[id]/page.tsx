@@ -7,6 +7,7 @@ import { useSpring, animated } from '@react-spring/web'
 import { useAppStore } from '@/store'
 import { Three } from '@/helpers/components/Three'
 import Loading from '@/components/canvas/Loading'
+import { cn } from '@/utils'
 // import { Three } from '@/helpers/components/Three'
 // import { useAppStore } from '@/store'
 // import { PerspectiveCamera, Environment, CameraControls } from '@react-three/drei'
@@ -39,8 +40,8 @@ export default function LetterPage() {
   const [exiting, setExiting] = useState(false)
   const springs = useSpring({
     from: { x: '100vw' },
-    to: { x: exiting ? '-400px' : '0vw' },
-    config: { mass: 1, tension: 170, friction: 26, precision: 0.0001 },
+    to: { x: exiting ? '-100px' : '0vw' },
+    config: { mass: 3, tension: 170, friction: 26, precision: 0.0001 },
   })
 
   useEffect(() => {
@@ -58,15 +59,20 @@ export default function LetterPage() {
     }, 1000)
   }
 
+  const mode = useAppStore((state) => state.mode)
+
   return (
     <>
       <div className='absolute top-8 left-8 z-100 pointer-events-auto'>
         <animated.button
           style={springs}
           onClick={handleBack}
-          className='cursor-pointer bg-white/90 backdrop-blur-sm text-black px-6 py-2 rounded-full font-bold transition-colors'
+          className={cn(
+            'cursor-pointer bg-transparent px-6 py-2 rounded-full font-bold transition-colors',
+            mode === 'dark' ? 'text-white' : 'text-black',
+          )}
         >
-          ← Back
+          ← Home
         </animated.button>
 
         <Three>

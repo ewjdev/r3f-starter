@@ -1,6 +1,5 @@
 import { Layout } from '@/components/dom/Layout'
 import '@/global.css'
-import { Suspense } from 'react'
 
 export const metadata = {
   title: 'Starter project for Nextjs + React-three-fiber ',

@@ -8,9 +8,12 @@ interface AppState {
   startTransition: (letter: string) => void
   endTransition: () => void
   resetTransition: () => void
+  mode: 'light' | 'dark'
+  setMode: (mode: 'light' | 'dark') => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
+  mode: 'dark',
   transitionState: 'idle',
   targetLetter: null,
   startTransition: (letter: string) => {
@@ -18,4 +21,5 @@ export const useAppStore = create<AppState>((set) => ({
   },
   endTransition: () => set({ transitionState: 'in' }),
   resetTransition: () => set({ transitionState: 'idle', targetLetter: null }),
+  setMode: (mode: 'light' | 'dark') => set({ mode }),
 }))

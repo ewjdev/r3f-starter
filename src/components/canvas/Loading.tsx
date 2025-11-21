@@ -1,64 +1,43 @@
 'use client'
 
-import { Text, Container, Fullscreen } from '@react-three/uikit'
-import { PerspectiveCamera, useProgress } from '@react-three/drei'
-import { memo, useEffect, useState } from 'react'
-import { Ui } from '@/helpers/components/Ui'
-import { useSpring, animated } from '@react-spring/three'
+import { useProgress } from '@react-three/drei'
+import { useEffect, useState } from 'react'
+import { useSpring, animated } from '@react-spring/web'
 
-const AnimatedContainer = animated(Container)
-
-const MAX_WIDTH = 300
-const MIN_WIDTH = 50
-
-const Loading = memo((props) => {
+export default function Loading() {
   const { progress } = useProgress()
+  const [show, setShow] = useState(true)
 
-  const w = Math.max(Math.round((progress / 100) * MAX_WIDTH), MIN_WIDTH)
-  0
-  const [show, setShow] = useState(progress < 100)
   useEffect(() => {
-    if (progress >= 100 && show) {
-      setTimeout(() => {
-        requestAnimationFrame(() => {
-          setShow(false)
-        })
-      }, 1000)
+    if (progress === 100) {
+      const timer = setTimeout(() => setShow(false), 500)
+      return () => clearTimeout(timer)
+    } else {
+      setShow(true)
     }
-  }, [progress, show])
+  }, [progress])
+
+  const { opacity } = useSpring({
+    opacity: show ? 1 : 0,
+    config: { tension: 280, friction: 60 },
+  })
 
   const { width } = useSpring({
-    width: w,
-    config: { mass: 1, tension: 170, friction: 26, precision: 0.0001 },
+    width: progress,
+    config: { tension: 280, friction: 60 },
   })
-  const { opacity } = useSpring({
-    opacity: !show ? 0 : 1,
-    config: { mass: 1, tension: 170, friction: 26, precision: 0.0001 },
-  })
-
-  console.log({ show, width: width.get(), progress, w, opacity: opacity.get() })
 
   return (
-    <Ui>
-      <PerspectiveCamera position={[-20, 40, 30]} fov={45} near={1} far={300} />
-      <Fullscreen flexDirection='row' justifyContent='center' alignItems='center' padding={10} gap={10}>
-        <AnimatedContainer
-          flexDirection='row'
-          justifyContent='center'
-          alignItems='center'
-          width={width}
-          backgroundColor='black'
-          borderRadius={10}
-          padding={10}
-          opacity={opacity}
-        >
-          <Text fontSize={20} color='white'>
-            {Math.round(progress)}%
-          </Text>
-        </AnimatedContainer>
-      </Fullscreen>
-    </Ui>
+    <animated.div
+      style={{ opacity, pointerEvents: show ? 'auto' : 'none' }}
+      className='fixed inset-0 z-50 flex flex-col items-center justify-center bg-black'
+    >
+      <div className='relative h-2 w-64 overflow-hidden rounded bg-gray-800'>
+        <animated.div className='absolute left-0 top-0 h-full bg-white' style={{ width: width.to((w) => `${w}%`) }} />
+      </div>
+      <animated.div className='mt-4 font-stack text-sm text-white'>
+        {width.to((w) => `Loading ${Math.round(w)}%`)}
+      </animated.div>
+    </animated.div>
   )
-})
-
-export default Loading
+}
