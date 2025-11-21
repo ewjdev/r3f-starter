@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic'
 import { useSpring, animated } from '@react-spring/web'
 import { useAppStore } from '@/store'
 import { cn } from '@/utils'
+import HamburgerNav from './HamburgerNav'
+
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
 type ClickAndHoldProps = {
   onClickAndHold: () => void
@@ -82,6 +84,7 @@ const Layout = ({ children }) => {
       }}
     >
       {children}
+      <HamburgerNav />
       <ClickAndHold
         onClickAndHold={() => {
           setMode(mode === 'light' ? 'dark' : 'light')
