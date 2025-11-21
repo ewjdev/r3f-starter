@@ -1,14 +1,6 @@
 'use client'
 
-import {
-  PerspectiveCamera,
-  Lightformer,
-  Environment,
-  CameraControls,
-  ContactShadows,
-  Preload,
-  MeshReflectorMaterial,
-} from '@react-three/drei'
+import { PerspectiveCamera, Lightformer, Environment, CameraControls, ContactShadows, Preload } from '@react-three/drei'
 import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier'
 import { Letter } from './Letter'
 
@@ -41,8 +33,8 @@ export default function HomeScene() {
       materialRef.current.opacity = mode === 'dark' ? 1 : 0
     }
     if (fogRef.current) {
-      fogRef.current.near = mode === 'dark' ? 5 : 60
-      fogRef.current.far = mode === 'dark' ? 55 : 60
+      fogRef.current.near = mode === 'dark' ? 5 : 80
+      fogRef.current.far = mode === 'dark' ? 55 : 80
 
       fogRef.current.needsUpdate = true
     }
@@ -93,7 +85,7 @@ export default function HomeScene() {
           environmentIntensity={0.5}
         >
           {/** On top of the HDRI we add some rectangular and circular shapes for nicer reflections */}
-          {/* <group rotation={[-Math.PI / 3, 0, 0]}>
+          <group rotation={[-Math.PI / 3, 0, 0]}>
             <Lightformer
               intensity={mode === 'dark' ? 2 : 0}
               rotation-x={Math.PI / 2}
@@ -122,7 +114,7 @@ export default function HomeScene() {
               position={[10, 1, 0]}
               scale={[50, 2, 1]}
             />
-          </group> */}
+          </group>
         </Environment>
       </Suspense>
 
