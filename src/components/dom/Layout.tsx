@@ -46,7 +46,7 @@ const ClickAndHold = ({ onClickAndHold, mode, delay = 350 }: ClickAndHoldProps) 
       onTouchEnd={() => setIsHolding(false)}
     >
       <animated.div
-        className='absolute top-0 left-0 w-full h-[20px] origin-left'
+        className='absolute top-0 left-0 w-full h-[10px] origin-left'
         style={{
           backgroundColor: color,
           scaleX: scale,
@@ -54,7 +54,7 @@ const ClickAndHold = ({ onClickAndHold, mode, delay = 350 }: ClickAndHoldProps) 
       />
       <div
         className={cn(
-          'absolute top-4 left-1',
+          'absolute top-2 left-1',
           mode === 'light' ? 'text-black' : 'text-white',
           isHolding ? 'opacity-100' : 'opacity-0',
         )}
