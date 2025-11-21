@@ -5,7 +5,7 @@ import Link from 'next/link'
 const Logo = () => {
   return (
     <Link href='https://ewj.dev'>
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 45' width='180' height='45'>
+      <svg id='logo' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 45' width='180' height='45'>
         <defs>
           <linearGradient id='wireframe-gradient' x1='0%' y1='0%' x2='100%' y2='100%'>
             <stop offset='0%' style={{ stopColor: '#00C6FF', stopOpacity: 1 }} />{' '}
@@ -20,6 +20,10 @@ const Logo = () => {
             /* General fonts */
             @import url('https://fonts.googleapis.com/css2?family=Stack+Sans+Notch:wght@200..700&display=swap');
 
+            #logo:hover #background {
+              opacity: 0.8;
+              animation: pulse 2s ease-in 2s 1 forwards;
+            }
             .svg-container {
               font-family:
                 'Stack Sans Notch',
@@ -117,11 +121,11 @@ const Logo = () => {
             }
 
             /* Optional: Dark Mode Background for preview */
-            /* svg { background-color: #0f172a; padding: 20px; border-radius: 8px;} */
+            /* svg { background-color: #000000; padding: 20px; border-radius: 8px;} */
           `}</style>
         </defs>
 
-        <rect width='100%' height='100%' fill='#0f172a' rx='8' opacity='.2' />
+        <rect id='background' width='100%' height='100%' fill='#0f172a' rx='10' opacity='.3' />
 
         <g className='svg-container' transform='translate(8, 20)'>
           <g transform='translate(15, -25)' className='scale-55'>
