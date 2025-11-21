@@ -33,7 +33,7 @@ export default function HomeScene() {
     }
     if (fogRef.current) {
       fogRef.current.near = mode === 'dark' ? 5 : 80
-      fogRef.current.far = mode === 'dark' ? 55 : 80
+      fogRef.current.far = mode === 'dark' ? 65 : 80
 
       fogRef.current.needsUpdate = true
     }

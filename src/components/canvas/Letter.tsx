@@ -38,7 +38,7 @@ export function Letter({ char, children, stencilBuffer = false, ...props }: Lett
     startTransition(char)
 
     if (main.current && controls) {
-      await controls.fitToBox(main.current, true)
+      await controls.fitToBox(main.current, true, { paddingLeft: 2 })
       router.push(`/space/${char.toLowerCase()}`)
     } else {
       setTimeout(() => {
