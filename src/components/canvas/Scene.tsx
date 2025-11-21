@@ -14,7 +14,7 @@ export default function Scene({ ...props }) {
       className='pointer-events-auto'
       {...props}
       dpr={[1.5, 2]}
-      camera={{ position: [-20, 40, 30], fov: 45, near: 1, far: 300 }}
+      camera={{ position: [-20, 40, 30], fov: 45, near: 1, far: 60 }}
     >
       {/* @ts-ignore */}
       <Transition />

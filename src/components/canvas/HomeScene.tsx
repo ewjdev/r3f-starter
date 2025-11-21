@@ -1,6 +1,14 @@
 'use client'
 
-import { PerspectiveCamera, Lightformer, Environment, CameraControls, ContactShadows, Preload } from '@react-three/drei'
+import {
+  PerspectiveCamera,
+  Lightformer,
+  Environment,
+  CameraControls,
+  ContactShadows,
+  Preload,
+  MeshReflectorMaterial,
+} from '@react-three/drei'
 import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier'
 import { Letter } from './Letter'
 
@@ -24,17 +32,16 @@ export default function HomeScene() {
       resetTransition()
     }, 2500)
   }, [resetTransition])
-  const materialRef = useRef<MeshBasicMaterial>(null)
+  const materialRef = useRef(null)
   useFrame(() => {
     if (materialRef.current) {
-      materialRef.current.color = new THREE.Color(mode === 'dark' ? 'black' : 'white')
+      materialRef.current.color = new THREE.Color(mode === 'dark' ? '#010101' : 'white')
       materialRef.current.opacity = mode === 'dark' ? 1 : 0
     }
   })
   return (
     <>
-      <PerspectiveCamera makeDefault position={[-20, 40, 30]} fov={45} near={1} far={300} />
-
+      <PerspectiveCamera makeDefault position={[-20, 35, 30]} fov={45} near={1} far={90} />
       {/** The physics world */}
       <Physics gravity={[0, -60, 0]}>
         <Letter char='S' position={[2, 60, -2]} rotation={[4, 5, 6]}>
@@ -68,9 +75,23 @@ export default function HomeScene() {
         </RigidBody>
       </Physics>
 
+      {mode === 'dark' && <fog attach='fog' args={['#010101', 0, 70]} />}
       <mesh rotation-x={-Math.PI / 2} position={[0, -6, 0]}>
         <planeGeometry args={[300, 300]} />
-        <meshBasicMaterial ref={materialRef} transparent />
+        <MeshReflectorMaterial
+          blur={[300, 100]}
+          resolution={512}
+          mixBlur={0.5}
+          mixStrength={20}
+          roughness={mode === 'dark' ? 0.2 : 1}
+          depthScale={1.2}
+          minDepthThreshold={0.4}
+          maxDepthThreshold={1.4}
+          color={mode === 'dark' ? '#000000' : 'white'}
+          opacity={mode === 'dark' ? 1 : 0}
+          transparent
+          metalness={mode === 'dark' ? 0.8 : 0}
+        />
       </mesh>
       {/** Environment (for reflections) */}
       <Suspense>

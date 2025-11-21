@@ -52,11 +52,15 @@ const ClickAndHold = ({ onClickAndHold, mode, delay = 500 }: ClickAndHoldProps) 
           scaleX: scale,
         }}
       />
-      {isHolding && (
-        <div className={cn('absolute top-4 left-0', mode === 'light' ? 'text-black' : 'text-white')}>
-          Hold to toggle theme
-        </div>
-      )}
+      <div
+        className={cn(
+          'absolute top-4 left-0',
+          mode === 'light' ? 'text-black' : 'text-white',
+          isHolding ? 'opacity-100' : 'opacity-0',
+        )}
+      >
+        Hold to toggle theme
+      </div>
     </div>
   )
 }

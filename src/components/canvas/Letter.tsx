@@ -39,10 +39,10 @@ export function Letter({ char, children, stencilBuffer = false, ...props }: Lett
 
     if (main.current && controls) {
       await controls.fitToBox(main.current, true)
-      router.push(`/letter/${char.toLowerCase()}`)
+      router.push(`/space/${char.toLowerCase()}`)
     } else {
       setTimeout(() => {
-        router.push(`/letter/${char.toLowerCase()}`)
+        router.push(`/space/${char.toLowerCase()}`)
       }, 500)
     }
   }
