@@ -23,6 +23,7 @@ import { Suspense, useEffect, useRef } from 'react'
 import { MeshBasicMaterial } from 'three'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import Ground from './Ground'
 
 export default function HomeScene() {
   const resetTransition = useAppStore((state) => state.resetTransition)
@@ -33,10 +34,17 @@ export default function HomeScene() {
     }, 2500)
   }, [resetTransition])
   const materialRef = useRef(null)
+  const fogRef = useRef(null)
   useFrame(() => {
     if (materialRef.current) {
       materialRef.current.color = new THREE.Color(mode === 'dark' ? '#010101' : 'white')
       materialRef.current.opacity = mode === 'dark' ? 1 : 0
+    }
+    if (fogRef.current) {
+      fogRef.current.near = mode === 'dark' ? 5 : 60
+      fogRef.current.far = mode === 'dark' ? 55 : 60
+
+      fogRef.current.needsUpdate = true
     }
   })
   return (
@@ -75,32 +83,17 @@ export default function HomeScene() {
         </RigidBody>
       </Physics>
 
-      {mode === 'dark' && <fog attach='fog' args={['#010101', 0, 70]} />}
-      <mesh rotation-x={-Math.PI / 2} position={[0, -6, 0]}>
-        <planeGeometry args={[300, 300]} />
-        <MeshReflectorMaterial
-          blur={[300, 100]}
-          resolution={512}
-          mixBlur={0.5}
-          mixStrength={20}
-          roughness={mode === 'dark' ? 0.2 : 1}
-          depthScale={1.2}
-          minDepthThreshold={0.4}
-          maxDepthThreshold={1.4}
-          color={mode === 'dark' ? '#000000' : 'white'}
-          opacity={mode === 'dark' ? 1 : 0}
-          transparent
-          metalness={mode === 'dark' ? 0.8 : 0}
-        />
-      </mesh>
+      <fog ref={fogRef} attach='fog' args={['#010101', 5, 55]} />
+      <Ground />
       {/** Environment (for reflections) */}
       <Suspense>
         <Environment
           files='https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/rogland_clear_night_1k.hdr'
           resolution={512}
+          environmentIntensity={0.5}
         >
           {/** On top of the HDRI we add some rectangular and circular shapes for nicer reflections */}
-          <group rotation={[-Math.PI / 3, 0, 0]}>
+          {/* <group rotation={[-Math.PI / 3, 0, 0]}>
             <Lightformer
               intensity={mode === 'dark' ? 2 : 0}
               rotation-x={Math.PI / 2}
@@ -129,7 +122,7 @@ export default function HomeScene() {
               position={[10, 1, 0]}
               scale={[50, 2, 1]}
             />
-          </group>
+          </group> */}
         </Environment>
       </Suspense>
 
@@ -143,7 +136,14 @@ export default function HomeScene() {
       />
 
       {/** Yomotsu/camera-controls, a better replacement for OrbitControls */}
-      <CameraControls makeDefault dollyToCursor minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
+      <CameraControls
+        maxDistance={60}
+        minDistance={10}
+        makeDefault
+        dollyToCursor
+        minPolarAngle={0}
+        maxPolarAngle={Math.PI / 2}
+      />
 
       {/** Makes sure everything is processed and GPU uploaded before Threejs "sees" it */}
       <Preload all />

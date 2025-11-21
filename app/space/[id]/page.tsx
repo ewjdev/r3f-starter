@@ -63,7 +63,7 @@ export default function LetterPage() {
 
   return (
     <>
-      <div className='absolute top-4 left-4 z-10001 pointer-events-auto'>
+      <div className='absolute top-10 md:top-2 left-4 xs:left-8 z-10001 pointer-events-auto'>
         <animated.button
           style={springs}
           onClick={handleBack}
