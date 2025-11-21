@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { useGLTF } from '@react-three/drei/core'
+import { Suspense, useRef } from 'react'
+import { Box, CameraControls, Environment, useGLTF } from '@react-three/drei/core'
 import { useFrame } from '@react-three/fiber'
 import { BufferGeometry, Material, Mesh } from 'three'
 
@@ -8,10 +8,15 @@ export default function App(props) {
   useFrame((state, delta) => (ref.current.rotation.y += delta / 2))
   return (
     <group ref={ref} {...props}>
-      <ambientLight intensity={0.75} />
-      <pointLight intensity={1} position={[-10, -25, -10]} />
-      <spotLight intensity={2.25} angle={0.2} penumbra={1} position={[-25, 20, -15]} />
-      <Model url='/models/react-transformed.glb' />
+      <directionalLight position={[1, 2, 1.5]} intensity={0.5} castShadow />
+      <hemisphereLight intensity={1.5} groundColor='red' />
+      <Box args={[2, 2, 2]} position={[0, 0, 0]}>
+        <meshBasicMaterial color='red' />
+      </Box>
+      <Suspense>
+        <Model url='/models/turtle.glb' />
+      </Suspense>
+      <CameraControls minDistance={15} maxDistance={30} makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
     </group>
   )
 }
@@ -28,6 +33,7 @@ type Node = {
   material: Material
 }
 function Model({ url }: { url: string }) {
+  console.log('url', url)
   const { nodes } = useGLTF(url)
   const planet002 = nodes.planet002 as Mesh
   const planet003 = nodes.planet003 as Mesh

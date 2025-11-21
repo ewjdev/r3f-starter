@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useGLTF } from '@react-three/drei/core'
+import { CameraControls, useGLTF } from '@react-three/drei/core'
 import { Float, Instance, Instances } from '@react-three/drei/core'
 import { useAnimations } from '@react-three/drei/web'
+import { Mesh, MeshPhysicalMaterial } from 'three'
 
 const spheres = [
   [1, 'orange', 0.05, [-4, -1, -1]],
@@ -21,25 +22,29 @@ const spheres = [
 
 export default function App() {
   return (
-    <Instances renderOrder={-1000}>
-      <ambientLight intensity={0.3} onPointerOver={() => null} />
-      <pointLight position={[10, 10, 5]} />
-      <pointLight position={[-10, -10, -5]} />
-      <sphereGeometry args={[1, 64, 64]} />
-      <meshBasicMaterial depthTest={false} />
-      {spheres.map(([scale, color, speed, position], index) => (
-        <Sphere
-          key={index}
-          scale={scale as number}
-          color={color as string}
-          speed={speed as number}
-          position={position as number[]}
-        />
-      ))}
-      <Float rotationIntensity={2} floatIntensity={10} speed={2}>
-        <Turtle position={[0, 0, -2]} rotation={[0, Math.PI, 0]} scale={26} />
-      </Float>
-    </Instances>
+    <>
+      <color attach='background' args={['#010101']} />
+      <Instances renderOrder={-1000}>
+        <ambientLight intensity={10} onPointerOver={() => null} />
+        <pointLight position={[10, 10, 5]} />
+        <pointLight position={[-10, -10, -5]} />
+        <sphereGeometry args={[1, 64, 64]} />
+        <meshBasicMaterial depthTest={false} />
+        <CameraControls minDistance={15} maxDistance={30} makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
+        {spheres.map(([scale, color, speed, position], index) => (
+          <Sphere
+            key={index}
+            scale={scale as number}
+            color={color as string}
+            speed={speed as number}
+            position={position as number[]}
+          />
+        ))}
+        <Float rotationIntensity={2} floatIntensity={10} speed={2}>
+          <Turtle position={[0, 0, -2]} rotation={[0, Math.PI, 0]} scale={26} />
+        </Float>
+      </Instances>
+    </>
   )
 }
 
@@ -58,12 +63,28 @@ Source: https://sketchfab.com/3d-models/model-52a-kemps-ridley-sea-turtle-no-id-
 Title: Model 52A - Kemps Ridley Sea Turtle (no ID)
 */
 function Turtle(props) {
-  const { scene, animations } = useGLTF('/models/turtle.glb')
+  const { scene, animations, nodes } = useGLTF('/models/turtle.glb')
   const { actions, mixer } = useAnimations(animations, scene)
+
   useEffect(() => {
     mixer.timeScale = 0.5
     actions['Swim Cycle'].play()
-  }, [])
-  useFrame((state) => (scene.rotation.z = Math.sin(state.clock.elapsedTime / 4) / 2))
+    scene.traverse((obj) => {
+      if ((obj as Mesh).isMesh) {
+        ;(obj as Mesh).material = new MeshPhysicalMaterial({
+          color: 'red',
+          metalness: 0.9,
+          roughness: 0.5,
+          clearcoat: 1,
+          clearcoatRoughness: 0,
+        })
+      }
+    })
+  }, [scene, actions, mixer])
+
+  useFrame((state) => {
+    scene.rotation.z = Math.sin(state.clock.elapsedTime / 4) / 2
+  })
+
   return <primitive object={scene} {...props} />
 }

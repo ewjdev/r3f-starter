@@ -43,13 +43,16 @@ export default function HomeScene() {
       <PerspectiveCamera makeDefault position={[-20, 35, 30]} fov={45} near={1} far={90} />
       {/** The physics world */}
       <Physics gravity={[0, -60, 0]}>
-        <Letter char='S' position={[2, 60, -2]} rotation={[4, 5, 6]}>
+        <Letter color='#000000' char='e' position={[2, 60, -2]} rotation={[4, 5, 6]}>
           <Shoe scale={5} />
         </Letter>
-        <Letter char='T' position={[3, 70, 2]} rotation={[7, 8, 9]}>
-          <Rocket position={[-1, -1, 0]} scale={0.6} />
+        <Letter color='#ffffff' char='w' position={[3, 70, 2]} rotation={[7, 8, 9]}>
+          <Turtle />
         </Letter>
-        <Letter char='A' position={[-1, 80, 3]} rotation={[10, 11, 12]}>
+        <Letter color='#4899c9' char='j' position={[3, 80, 2]} rotation={[7, 8, 9]}>
+          <Turtle />
+        </Letter>
+        {/* <Letter char='A' position={[-1, 80, 3]} rotation={[10, 11, 12]}>
           <Basic scale={3} />
         </Letter>
         <Letter char='R' position={[-2, 90, 2]} rotation={[13, 14, 15]}>
@@ -63,7 +66,7 @@ export default function HomeScene() {
         </Letter>
         <Letter char='R' position={[-3, 100, -3]} rotation={[16, 17, 18]}>
           <Stencil scale={3} />
-        </Letter>
+        </Letter> */}
         {/** Invisible walls */}
         <RigidBody type='fixed'>
           <CuboidCollider position={[0, -6, 0]} args={[100, 1, 100]} />

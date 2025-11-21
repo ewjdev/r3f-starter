@@ -21,11 +21,11 @@ const Stencil = dynamic(() => import('@/sandboxes/Stencil'))
 const Rocket = dynamic(() => import('@/sandboxes/Rocket'))
 
 const Components = {
-  s: Shoe,
+  s: Turtle,
   t: Rocket, // Mapping first T to Rocket
-  a: Basic,
-  r: PingPong, // Mapping first R to PingPong
-  e: Stencil,
+  a: PingPong,
+  r: Stencil, // Mapping first R to PingPong
+  e: Turtle,
 }
 
 export default function LetterPage() {
