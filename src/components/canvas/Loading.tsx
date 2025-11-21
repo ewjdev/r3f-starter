@@ -29,8 +29,8 @@ export default function Loading() {
 
   return (
     <animated.div
-      style={{ opacity, pointerEvents: show ? 'auto' : 'none' }}
-      className='fixed inset-0 z-50 flex flex-col items-center justify-center bg-black'
+      style={{ opacity, pointerEvents: show ? 'auto' : 'none', display: show ? 'flex' : 'none' }}
+      className='fixed inset-0 z-10000 flex flex-col items-center justify-center bg-black'
     >
       <div className='relative h-2 w-64 overflow-hidden rounded bg-gray-800'>
         <animated.div className='absolute left-0 top-0 h-full bg-white' style={{ width: width.to((w) => `${w}%`) }} />

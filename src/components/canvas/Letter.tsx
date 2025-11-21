@@ -15,6 +15,7 @@ interface LetterProps {
   stencilBuffer?: boolean
   position?: [number, number, number]
   rotation?: [number, number, number]
+  color?: string
 }
 
 export function Letter({ char, children, stencilBuffer = false, ...props }: LetterProps) {
@@ -38,11 +39,11 @@ export function Letter({ char, children, stencilBuffer = false, ...props }: Lett
     startTransition(char)
 
     if (main.current && controls) {
-      await controls.fitToBox(main.current, true)
-      router.push(`/letter/${char.toLowerCase()}`)
+      await controls.fitToBox(main.current, true, { paddingLeft: 2 })
+      router.push(`/space/${char.toLowerCase()}`)
     } else {
       setTimeout(() => {
-        router.push(`/letter/${char.toLowerCase()}`)
+        router.push(`/space/${char.toLowerCase()}`)
       }, 500)
     }
   }
@@ -55,11 +56,11 @@ export function Letter({ char, children, stencilBuffer = false, ...props }: Lett
           onClick={handleClick}
           onPointerOver={() => (document.body.style.cursor = 'pointer')}
           onPointerOut={() => (document.body.style.cursor = 'default')}
-          font='https://threejs.org/examples/fonts/helvetiker_bold.typeface.json'
+          font='/font.json'
           smooth={1}
           scale={0.125}
           size={80}
-          height={4}
+          height={2}
           curveSegments={10}
           bevelThickness={10}
           bevelSize={2}
@@ -86,7 +87,7 @@ export function Letter({ char, children, stencilBuffer = false, ...props }: Lett
                 return false
               }}
             >
-              <color attach='background' args={['#4899c9']} />
+              {props.color && <color attach='background' args={[props.color as string]} />}
               <group ref={contents} matrixAutoUpdate={false}>
                 {children}
               </group>

@@ -4,7 +4,7 @@ import { useFrame } from '@react-three/fiber'
 export default function App(props) {
   return (
     <group {...props}>
-      <ambientLight intensity={0.3} onPointerOver={() => null} />
+      <ambientLight intensity={10} onPointerOver={() => null} />
       <pointLight position={[10, 10, 5]} />
       <pointLight position={[-10, -10, -5]} />
       <Box position={[-0.9, 0, 0]} />
@@ -28,7 +28,13 @@ function Box(props) {
       onPointerOut={(event) => hover(false)}
     >
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
+      <meshPhysicalMaterial
+        color={hovered ? 'green' : 'orange'}
+        metalness={0.9}
+        roughness={0.5}
+        clearcoat={1}
+        clearcoatRoughness={0}
+      />
     </mesh>
   )
 }

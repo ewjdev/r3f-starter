@@ -12,9 +12,9 @@ import Stencil from '@/sandboxes/Stencil'
 import Rocket from '@/sandboxes/Rocket'
 import { useAppStore } from '@/store'
 import { Suspense, useEffect, useRef } from 'react'
-import { MeshBasicMaterial } from 'three'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import Ground from './Ground'
 
 export default function HomeScene() {
   const resetTransition = useAppStore((state) => state.resetTransition)
@@ -24,26 +24,35 @@ export default function HomeScene() {
       resetTransition()
     }, 2500)
   }, [resetTransition])
-  const materialRef = useRef<MeshBasicMaterial>(null)
+  const materialRef = useRef(null)
+  const fogRef = useRef(null)
   useFrame(() => {
     if (materialRef.current) {
-      materialRef.current.color = new THREE.Color(mode === 'dark' ? 'black' : 'white')
+      materialRef.current.color = new THREE.Color(mode === 'dark' ? '#010101' : 'white')
       materialRef.current.opacity = mode === 'dark' ? 1 : 0
+    }
+    if (fogRef.current) {
+      fogRef.current.near = mode === 'dark' ? 5 : 80
+      fogRef.current.far = mode === 'dark' ? 65 : 80
+
+      fogRef.current.needsUpdate = true
     }
   })
   return (
     <>
-      <PerspectiveCamera makeDefault position={[-20, 40, 30]} fov={45} near={1} far={300} />
-
+      <PerspectiveCamera makeDefault position={[-20, 35, 30]} fov={45} near={1} far={90} />
       {/** The physics world */}
       <Physics gravity={[0, -60, 0]}>
-        <Letter char='S' position={[2, 60, -2]} rotation={[4, 5, 6]}>
+        <Letter color='#000000' char='e' position={[2, 60, -2]} rotation={[4, 5, 6]}>
           <Shoe scale={5} />
         </Letter>
-        <Letter char='T' position={[3, 70, 2]} rotation={[7, 8, 9]}>
-          <Rocket position={[-1, -1, 0]} scale={0.6} />
+        <Letter color='#ffffff' char='w' position={[3, 70, 2]} rotation={[7, 8, 9]}>
+          <Turtle />
         </Letter>
-        <Letter char='A' position={[-1, 80, 3]} rotation={[10, 11, 12]}>
+        <Letter color='#4899c9' char='j' position={[3, 80, 2]} rotation={[7, 8, 9]}>
+          <Turtle />
+        </Letter>
+        {/* <Letter char='A' position={[-1, 80, 3]} rotation={[10, 11, 12]}>
           <Basic scale={3} />
         </Letter>
         <Letter char='R' position={[-2, 90, 2]} rotation={[13, 14, 15]}>
@@ -57,7 +66,7 @@ export default function HomeScene() {
         </Letter>
         <Letter char='R' position={[-3, 100, -3]} rotation={[16, 17, 18]}>
           <Stencil scale={3} />
-        </Letter>
+        </Letter> */}
         {/** Invisible walls */}
         <RigidBody type='fixed'>
           <CuboidCollider position={[0, -6, 0]} args={[100, 1, 100]} />
@@ -68,15 +77,14 @@ export default function HomeScene() {
         </RigidBody>
       </Physics>
 
-      <mesh rotation-x={-Math.PI / 2} position={[0, -6, 0]}>
-        <planeGeometry args={[300, 300]} />
-        <meshBasicMaterial ref={materialRef} transparent />
-      </mesh>
+      <fog ref={fogRef} attach='fog' args={['#010101', 5, 55]} />
+      <Ground />
       {/** Environment (for reflections) */}
       <Suspense>
         <Environment
           files='https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/rogland_clear_night_1k.hdr'
           resolution={512}
+          environmentIntensity={0.5}
         >
           {/** On top of the HDRI we add some rectangular and circular shapes for nicer reflections */}
           <group rotation={[-Math.PI / 3, 0, 0]}>
@@ -122,7 +130,14 @@ export default function HomeScene() {
       />
 
       {/** Yomotsu/camera-controls, a better replacement for OrbitControls */}
-      <CameraControls makeDefault dollyToCursor minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
+      <CameraControls
+        maxDistance={60}
+        minDistance={10}
+        makeDefault
+        dollyToCursor
+        minPolarAngle={0}
+        maxPolarAngle={Math.PI / 2}
+      />
 
       {/** Makes sure everything is processed and GPU uploaded before Threejs "sees" it */}
       <Preload all />

@@ -11,7 +11,7 @@ type ClickAndHoldProps = {
   mode: 'light' | 'dark'
   delay?: number
 }
-const ClickAndHold = ({ onClickAndHold, mode, delay = 500 }: ClickAndHoldProps) => {
+const ClickAndHold = ({ onClickAndHold, mode, delay = 350 }: ClickAndHoldProps) => {
   const [isHolding, _setIsHolding] = useState(false)
   const setIsHoldingRef = useRef<NodeJS.Timeout | null>(null)
   const setIsHolding = (value: boolean) => {
@@ -25,7 +25,7 @@ const ClickAndHold = ({ onClickAndHold, mode, delay = 500 }: ClickAndHoldProps) 
   }
   const { scale } = useSpring({
     scale: isHolding ? 1 : 0,
-    config: { duration: isHolding ? 1000 : 500 },
+    config: { duration: isHolding ? 1350 : 350 },
     onRest: ({ finished, value }) => {
       if (finished && value.scale === 1) {
         onClickAndHold()
@@ -38,7 +38,7 @@ const ClickAndHold = ({ onClickAndHold, mode, delay = 500 }: ClickAndHoldProps) 
 
   return (
     <div
-      className='absolute top-0 left-0 w-full h-full'
+      className='absolute top-0 left-0 w-full h-full touch-none'
       onMouseDown={() => setIsHolding(true)}
       onMouseUp={() => setIsHolding(false)}
       onMouseLeave={() => setIsHolding(false)}
@@ -52,11 +52,15 @@ const ClickAndHold = ({ onClickAndHold, mode, delay = 500 }: ClickAndHoldProps) 
           scaleX: scale,
         }}
       />
-      {isHolding && (
-        <div className={cn('absolute top-4 left-0', mode === 'light' ? 'text-black' : 'text-white')}>
-          Hold to toggle theme
-        </div>
-      )}
+      <div
+        className={cn(
+          'absolute top-4 left-1',
+          mode === 'light' ? 'text-black' : 'text-white',
+          isHolding ? 'opacity-100' : 'opacity-0',
+        )}
+      >
+        Hold to toggle {mode === 'light' ? 'dark' : 'light'} mode
+      </div>
     </div>
   )
 }

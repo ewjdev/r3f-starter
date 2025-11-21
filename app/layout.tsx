@@ -1,5 +1,6 @@
 import { Layout } from '@/components/dom/Layout'
 import '@/global.css'
+import Logo from '@/components/Logo'
 
 export const metadata = {
   title: 'Starter project for Nextjs + React-three-fiber ',
@@ -18,6 +19,9 @@ export default function RootLayout({ children }) {
         {/* To avoid FOUT with styled-components wrap Layout with StyledComponentsRegistry https://beta.nextjs.org/docs/styling/css-in-js#styled-components */}
 
         <Layout>{children}</Layout>
+        <div className='absolute bottom-2 right-0 z-10001'>
+          <Logo />
+        </div>
       </body>
     </html>
   )

@@ -21,11 +21,11 @@ const Stencil = dynamic(() => import('@/sandboxes/Stencil'))
 const Rocket = dynamic(() => import('@/sandboxes/Rocket'))
 
 const Components = {
-  s: Shoe,
+  s: Turtle,
   t: Rocket, // Mapping first T to Rocket
-  a: Basic,
-  r: PingPong, // Mapping first R to PingPong
-  e: Stencil,
+  a: PingPong,
+  r: Stencil, // Mapping first R to PingPong
+  e: Turtle,
 }
 
 export default function LetterPage() {
@@ -63,7 +63,7 @@ export default function LetterPage() {
 
   return (
     <>
-      <div className='absolute top-8 left-8 z-100 pointer-events-auto'>
+      <div className='absolute top-10 md:top-2 left-2 md:left-4 z-10001 pointer-events-auto'>
         <animated.button
           style={springs}
           onClick={handleBack}

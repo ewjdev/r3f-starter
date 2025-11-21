@@ -52,7 +52,7 @@
   },
   "scripts": {
     "lint": "next lint --fix --dir app",
-    "dev": "next dev",
+    "dev": "next dev --experimental-https",
     "build": "next build",
     "analyze": "ANALYZE=true next build",
     "start": "next start",

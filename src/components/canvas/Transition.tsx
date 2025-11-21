@@ -29,15 +29,12 @@ const TRANSITION_CONFIG = {
   debug: false,
 }
 
-const DEFAULT_FOCAL_LENGTH = 0.01
+const DEFAULT_FOCAL_LENGTH = 30
 const DEFAULT_FOCUS_DISTANCE = 30
-const DEFAULT_BOKEH_SCALE = 8
+const DEFAULT_BOKEH_SCALE = 0
 
 export const Transition = memo(({ children }: { children: React.ReactNode }) => {
   const transitionState = useAppStore((state) => state.transitionState)
-  const { id } = useParams<{ id: string }>()
-  const isSubPage = !!id
-  console.log({ isSubPage, id })
   // @ts-ignore
   const pixelationRef = useRef(null)
   const depthOfFieldRef = useRef(null)
@@ -76,17 +73,6 @@ export const Transition = memo(({ children }: { children: React.ReactNode }) => 
         }
         // Ensure minimum granularity is 1 to avoid invalid values if the effect doesn't handle 0
         pixelationRef.current.granularity = Math.max(1, currentGranularity)
-      }
-    }
-    if (depthOfFieldRef.current) {
-      if (!isSubPage && !isTransitingOut) {
-        depthOfFieldRef.current.focalLength = DEFAULT_FOCUS_DISTANCE
-        depthOfFieldRef.current.focusDistance = DEFAULT_FOCUS_DISTANCE
-        depthOfFieldRef.current.bokehScale = 0
-      } else {
-        depthOfFieldRef.current.focalLength = DEFAULT_FOCAL_LENGTH
-        depthOfFieldRef.current.focusDistance = DEFAULT_FOCUS_DISTANCE
-        depthOfFieldRef.current.bokehScale = DEFAULT_BOKEH_SCALE / 100
       }
     }
   })
