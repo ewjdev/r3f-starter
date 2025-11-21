@@ -11,6 +11,7 @@ import { CameraControls } from '@react-three/drei/web'
 
 interface LetterProps {
   char: string
+  slug: string
   children?: ReactNode
   stencilBuffer?: boolean
   position?: [number, number, number]
@@ -18,7 +19,7 @@ interface LetterProps {
   color?: string
 }
 
-export function Letter({ char, children, stencilBuffer = false, ...props }: LetterProps) {
+export function Letter({ char, slug, children, stencilBuffer = false, ...props }: LetterProps) {
   const main = useRef<THREE.Group>(null)
   const contents = useRef<THREE.Group>(null)
   const events = useThree((state) => state.events)
@@ -40,10 +41,10 @@ export function Letter({ char, children, stencilBuffer = false, ...props }: Lett
 
     if (main.current && controls) {
       await controls.fitToBox(main.current, true, { paddingLeft: 2 })
-      router.push(`/space/${char.toLowerCase()}`)
+      router.push(`/space/${slug}`)
     } else {
       setTimeout(() => {
-        router.push(`/space/${char.toLowerCase()}`)
+        router.push(`/space/${slug}`)
       }, 500)
     }
   }

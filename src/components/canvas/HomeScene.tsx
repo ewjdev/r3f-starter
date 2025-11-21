@@ -3,13 +3,7 @@
 import { PerspectiveCamera, Lightformer, Environment, CameraControls, ContactShadows, Preload } from '@react-three/drei'
 import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier'
 import { Letter } from './Letter'
-
-import Turtle from '@/sandboxes/Turtle'
-import Basic from '@/sandboxes/Basic'
-import PingPong from '@/sandboxes/PingPong'
-import Shoe from '@/sandboxes/Shoe'
-import Stencil from '@/sandboxes/Stencil'
-import Rocket from '@/sandboxes/Rocket'
+import { sandboxes } from '@/config/sandboxes'
 import { useAppStore } from '@/store'
 import { Suspense, useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
@@ -43,30 +37,17 @@ export default function HomeScene() {
       <PerspectiveCamera makeDefault position={[-20, 35, 30]} fov={45} near={1} far={90} />
       {/** The physics world */}
       <Physics gravity={[0, -60, 0]}>
-        <Letter color='#000000' char='e' position={[2, 60, -2]} rotation={[4, 5, 6]}>
-          <Shoe scale={5} />
-        </Letter>
-        <Letter color='#ffffff' char='w' position={[3, 70, 2]} rotation={[7, 8, 9]}>
-          <Turtle />
-        </Letter>
-        <Letter color='#4899c9' char='j' position={[3, 80, 2]} rotation={[7, 8, 9]}>
-          <Turtle />
-        </Letter>
-        {/* <Letter char='A' position={[-1, 80, 3]} rotation={[10, 11, 12]}>
-          <Basic scale={3} />
-        </Letter>
-        <Letter char='R' position={[-2, 90, 2]} rotation={[13, 14, 15]}>
-          <PingPong />
-        </Letter>
-        <Letter char='T' position={[-3, 100, -3]} rotation={[16, 17, 18]} stencilBuffer>
-          <Stencil scale={1} />
-        </Letter>
-        <Letter char='E' position={[-3, 100, -3]} rotation={[16, 17, 18]}>
-          <Stencil scale={1} />
-        </Letter>
-        <Letter char='R' position={[-3, 100, -3]} rotation={[16, 17, 18]}>
-          <Stencil scale={3} />
-        </Letter> */}
+        {sandboxes.map((s) => (
+          <Letter
+            key={s.slug}
+            slug={s.slug}
+            char={s.char}
+            color={s.color}
+            position={s.position}
+            rotation={s.rotation}
+          />
+        ))}
+
         {/** Invisible walls */}
         <RigidBody type='fixed'>
           <CuboidCollider position={[0, -6, 0]} args={[100, 1, 100]} />
@@ -84,7 +65,7 @@ export default function HomeScene() {
         <Environment
           files='https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/rogland_clear_night_1k.hdr'
           resolution={512}
-          environmentIntensity={0.5}
+          environmentIntensity={1}
         >
           {/** On top of the HDRI we add some rectangular and circular shapes for nicer reflections */}
           <group rotation={[-Math.PI / 3, 0, 0]}>
