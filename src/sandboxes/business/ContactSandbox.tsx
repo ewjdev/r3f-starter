@@ -1,15 +1,33 @@
 'use client'
 
+import { useRef } from 'react'
 import { useAppStore } from '@/store'
 import { Html, Sparkles, Center, Text, OrthographicCamera } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber'
 
 export default function ContactSandbox() {
   const mode = useAppStore((state) => state.mode)
   const textColor = mode === 'dark' ? '#ffffff' : '#1a535c'
+  const sparklesRef = useRef(null)
+
+  useFrame((state) => {
+    if (sparklesRef.current) {
+      // Get normalized mouse coordinates (-1 to 1)
+      const { x, y } = state.mouse
+
+      const nextX = x - sparklesRef.current.position.x
+      const nextY = y - sparklesRef.current.position.y
+      // Smoothly interpolate sparkles position based on mouse
+      // Scale the movement to make it subtle (multiplied by 3 for orthographic camera)
+      sparklesRef.current.position.x += nextX * 0.001
+      sparklesRef.current.position.y += nextY * 0.05
+    }
+  })
+
   return (
     <group>
       <OrthographicCamera makeDefault position={[0, 0, 2]} zoom={20} />
-      <Sparkles count={150} scale={25} size={4} speed={0.4} opacity={0.6} color='#1a535c' />
+      <Sparkles ref={sparklesRef} count={100} scale={30} size={3} speed={0.2} opacity={0.6} color='#1a535c' />
 
       <Center position={[0, 10, 0]}>
         <Text fontSize={1} color={textColor}>

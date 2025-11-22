@@ -18,6 +18,8 @@
     "@react-three/rapier": "^2.2.0",
     "@react-three/uikit": "^1.0.59",
     "@react-three/uikit-default": "^1.0.59",
+    "@strudel/core": "^1.2.5",
+    "@strudel/web": "^1.2.6",
     "clsx": "^2.1.1",
     "glsl-random": "^0.0.5",
     "next": "^16.0.3",

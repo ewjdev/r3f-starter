@@ -53,4 +53,3 @@ export const sandboxes: SandboxConfig[] = [
     component: dynamic(() => import('@/sandboxes/business/ContactSandbox')),
   },
 ]
-
