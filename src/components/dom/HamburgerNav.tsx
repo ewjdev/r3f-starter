@@ -16,7 +16,7 @@ export default function HamburgerNav() {
 
   const { x } = useSpring({
     x: isNavOpen ? 0 : 100,
-    config: { tension: 280, friction: 60 },
+    config: { tension: 280, friction: 30 },
   })
 
   const handleNavigate = (slug: string) => {

@@ -8,30 +8,21 @@ import { cn } from '@/utils'
 import HamburgerNav from './HamburgerNav'
 
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
-type ClickAndHoldProps = {
-  onClickAndHold: () => void
+const ClickAndHold = ({
+  isHolding,
+  onTrigger,
+  mode,
+}: {
+  isHolding: boolean
+  onTrigger: () => void
   mode: 'light' | 'dark'
-  delay?: number
-}
-const ClickAndHold = ({ onClickAndHold, mode, delay = 350 }: ClickAndHoldProps) => {
-  const [isHolding, _setIsHolding] = useState(false)
-  const setIsHoldingRef = useRef<NodeJS.Timeout | null>(null)
-  const setIsHolding = (value: boolean) => {
-    if (setIsHoldingRef.current) {
-      clearTimeout(setIsHoldingRef.current)
-    }
-    let d = !value ? 0 : delay
-    setIsHoldingRef.current = setTimeout(() => {
-      _setIsHolding(value)
-    }, d)
-  }
+}) => {
   const { scale } = useSpring({
     scale: isHolding ? 1 : 0,
     config: { duration: isHolding ? 1350 : 350 },
     onRest: ({ finished, value }) => {
       if (finished && value.scale === 1) {
-        onClickAndHold()
-        setIsHolding(false)
+        onTrigger()
       }
     },
   })
@@ -39,14 +30,7 @@ const ClickAndHold = ({ onClickAndHold, mode, delay = 350 }: ClickAndHoldProps) 
   const color = mode === 'light' ? 'black' : 'white'
 
   return (
-    <div
-      className='absolute top-0 left-0 w-full h-full touch-none'
-      onMouseDown={() => setIsHolding(true)}
-      onMouseUp={() => setIsHolding(false)}
-      onMouseLeave={() => setIsHolding(false)}
-      onTouchStart={() => setIsHolding(true)}
-      onTouchEnd={() => setIsHolding(false)}
-    >
+    <div className='absolute top-0 left-0 w-full h-full pointer-events-none'>
       <animated.div
         className='absolute top-0 left-0 w-full h-[10px] origin-left'
         style={{
@@ -71,6 +55,19 @@ const Layout = ({ children }) => {
   const ref = useRef(null)
   const mode = useAppStore((state) => state.mode)
   const setMode = useAppStore((state) => state.setMode)
+
+  const [isHolding, _setIsHolding] = useState(false)
+  const setIsHoldingRef = useRef<NodeJS.Timeout | null>(null)
+  const setIsHolding = (value: boolean) => {
+    if (setIsHoldingRef.current) {
+      clearTimeout(setIsHoldingRef.current)
+    }
+    const d = !value ? 0 : 350
+    setIsHoldingRef.current = setTimeout(() => {
+      _setIsHolding(value)
+    }, d)
+  }
+
   return (
     <div
       ref={ref}
@@ -82,12 +79,19 @@ const Layout = ({ children }) => {
         touchAction: 'auto',
         backgroundColor: mode === 'dark' ? 'black' : 'white',
       }}
+      onMouseDown={() => setIsHolding(true)}
+      onMouseUp={() => setIsHolding(false)}
+      onMouseLeave={() => setIsHolding(false)}
+      onTouchStart={() => setIsHolding(true)}
+      onTouchEnd={() => setIsHolding(false)}
     >
       {children}
       <HamburgerNav />
       <ClickAndHold
-        onClickAndHold={() => {
+        isHolding={isHolding}
+        onTrigger={() => {
           setMode(mode === 'light' ? 'dark' : 'light')
+          _setIsHolding(false)
         }}
         mode={mode}
       />
