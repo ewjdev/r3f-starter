@@ -43,6 +43,52 @@ const PRODUCT_BY_SLUG = new Map(PRODUCTS.map((product) => [product.slug, product
 const LIST_PAGES = Math.ceil(PRODUCTS.length / ITEMS_PER_PAGE)
 const DETAIL_PAGES = 4 // Pages for scrolling through details
 
+type ProductTheme = {
+  textPrimary: string
+  textSecondary: string
+  mutedText: string
+  ghostButtonBg: string
+  ghostButtonHoverBg: string
+  ghostButtonBorder: string
+  ghostButtonText: string
+  chipBg: string
+  chipHoverBg: string
+  chipBorder: string
+}
+
+const PRODUCT_THEMES: Record<'light' | 'dark', ProductTheme> = {
+  light: {
+    textPrimary: '#0f1115',
+    textSecondary: '#4b4d57',
+    mutedText: '#6c6f7d',
+    ghostButtonBg: '#f0f2f8',
+    ghostButtonHoverBg: '#e1e4ee',
+    ghostButtonBorder: 'rgba(15,17,21,0.12)',
+    ghostButtonText: '#0f1115',
+    chipBg: '#ffffff',
+    chipHoverBg: '#f1f3f9',
+    chipBorder: 'rgba(15,17,21,0.14)',
+  },
+  dark: {
+    textPrimary: '#f7f8fb',
+    textSecondary: 'rgba(247,248,251,0.82)',
+    mutedText: '#b3b6c4',
+    ghostButtonBg: '#333338',
+    ghostButtonHoverBg: '#4d4d52',
+    ghostButtonBorder: 'rgba(247,248,251,0.18)',
+    ghostButtonText: '#f7f7fb',
+    chipBg: '#2b2b34',
+    chipHoverBg: '#3a3a45',
+    chipBorder: 'rgba(247,248,251,0.18)',
+  },
+}
+
+const getReadableTextColor = (hexColor: string) => {
+  const color = new THREE.Color(hexColor)
+  const luminance = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b
+  return luminance > 0.55 ? '#0b0d12' : '#f7f8fb'
+}
+
 const sineSnap = (value: number) => value - Math.sin(value * Math.PI * 2) / (Math.PI * 1.5)
 const magneticSnap = (value: number, maxPage: number, strength = 0.85) => {
   const nearest = THREE.MathUtils.clamp(Math.round(value), 0, maxPage)
@@ -85,12 +131,14 @@ function ProductItem({
   scrollData,
   selectedId,
   onSelect,
+  theme,
 }: {
   index: number
   data: (typeof PRODUCTS)[0]
   scrollData: { current: number }
   selectedId: number | null
   onSelect: (id: number) => void
+  theme: ProductTheme
 }) {
   const group = useRef<THREE.Group>(null)
   const { scene } = useGLTF(data.model) as any
@@ -188,7 +236,7 @@ function ProductItem({
           <Text fontSize={32} color={new THREE.Color(data.color)} fontWeight='bold'>
             {data.name}
           </Text>
-          <Text fontSize={20} color='white' opacity={0.8} marginTop={4}>
+          <Text fontSize={20} color={theme.textSecondary} opacity={0.9} marginTop={4}>
             ${data.price}
           </Text>
         </Root>
@@ -203,9 +251,9 @@ function ProductItem({
               paddingRight={24}
               paddingTop={12}
               paddingBottom={12}
-              backgroundColor={hovered ? '#4d4d52' : '#333338'}
+              backgroundColor={hovered ? theme.ghostButtonHoverBg : theme.ghostButtonBg}
               borderRadius={100}
-              borderColor='#4d4d52'
+              borderColor={theme.ghostButtonBorder}
               borderWidth={1}
               cursor='pointer'
               onPointerEnter={() => setHovered(true)}
@@ -217,7 +265,7 @@ function ProductItem({
               alignItems='center'
               justifyContent='center'
             >
-              <Text color='white' fontSize={14} fontWeight='medium'>
+              <Text color={theme.ghostButtonText} fontSize={14} fontWeight='medium'>
                 View Details
               </Text>
             </Container>
@@ -232,10 +280,12 @@ function DetailOverlay({
   data,
   scrollData,
   onBack,
+  theme,
 }: {
   data: (typeof PRODUCTS)[0]
   scrollData: { current: number }
   onBack: () => void
+  theme: ProductTheme
 }) {
   const { width, height } = useThree((state) => state.viewport)
   const group = useRef<THREE.Group>(null)
@@ -253,9 +303,9 @@ function DetailOverlay({
 
   return (
     <group ref={group} position={[width > 10 ? width * 0.25 : 0, 0, 0]}>
-      <DetailSection index={0} scrollData={scrollData} title='Description'>
+      <DetailSection index={0} scrollData={scrollData} title='Description' theme={theme}>
         <Text
-          color='white'
+          color={theme.textPrimary}
           fontSize={width > 10 ? 96 : 48}
           maxWidth={width > 10 ? 630 : mobileMaxWidth}
           lineHeight={1.5}
@@ -264,20 +314,20 @@ function DetailOverlay({
         </Text>
       </DetailSection>
 
-      <DetailSection index={1} scrollData={scrollData} title='Options'>
+      <DetailSection index={1} scrollData={scrollData} title='Options' theme={theme}>
         <Container flexDirection='row' gap={10} flexWrap='wrap' maxWidth={width > 10 ? 400 : mobileMaxWidth}>
           {['US 7', 'US 8', 'US 9', 'US 10', 'US 11'].map((size) => (
             <Container
               key={size}
               padding={12}
-              backgroundColor='#333'
+              backgroundColor={theme.chipBg}
               borderRadius={8}
               cursor='pointer'
               borderWidth={1}
-              borderColor='rgba(255,255,255,0.5)'
-              hover={{ borderColor: 'white', backgroundColor: '#444' }}
+              borderColor={theme.chipBorder}
+              hover={{ borderColor: theme.textPrimary, backgroundColor: theme.chipHoverBg }}
             >
-              <Text color='white' fontSize={14} fontWeight='bold'>
+              <Text color={theme.textPrimary} fontSize={14} fontWeight='bold'>
                 {size}
               </Text>
             </Container>
@@ -285,17 +335,17 @@ function DetailOverlay({
         </Container>
       </DetailSection>
 
-      <DetailSection index={2} scrollData={scrollData} title='More Info'>
+      <DetailSection index={2} scrollData={scrollData} title='More Info' theme={theme}>
         <Container flexDirection='column' gap={8}>
           {data.details?.map((detail, i) => (
-            <Text key={i} color='#ccc' fontSize={16}>
+            <Text key={i} color={theme.mutedText} fontSize={16}>
               • {detail}
             </Text>
           ))}
         </Container>
       </DetailSection>
 
-      <DetailSection index={3} scrollData={scrollData} title='Actions'>
+      <DetailSection index={3} scrollData={scrollData} title='Actions' theme={theme}>
         <Container
           backgroundColor={data.color}
           padding={24}
@@ -303,7 +353,7 @@ function DetailOverlay({
           cursor='pointer'
           onClick={() => window.open(data.url, '_blank')}
         >
-          <Text color='black' fontWeight='bold' fontSize={20}>
+          <Text color={getReadableTextColor(data.color)} fontWeight='bold' fontSize={20}>
             Buy Now - ${data.price}
           </Text>
         </Container>
@@ -317,11 +367,13 @@ function DetailSection({
   scrollData,
   title,
   children,
+  theme,
 }: {
   index: number
   scrollData: { current: number }
   title: string
   children: React.ReactNode
+  theme: ProductTheme
 }) {
   const group = useRef<THREE.Group>(null)
   const { width, height } = useThree((state) => state.viewport)
@@ -375,7 +427,7 @@ function DetailSection({
   return (
     <group ref={group} position={[baseX, -index * 5, 0]}>
       <Root pixelSize={0.01} flexDirection='column' alignItems='flex-start'>
-        <Text fontSize={32} color='white' fontWeight='bold' marginBottom={24}>
+        <Text fontSize={32} color={theme.textPrimary} fontWeight='bold' marginBottom={24}>
           {title}
         </Text>
         {children}
@@ -387,13 +439,16 @@ function DetailSection({
 function ProductScene({
   selectedId,
   onSelectProduct,
+  mode,
 }: {
   selectedId: number | null
   onSelectProduct: (id: number | null) => void
+  mode: 'light' | 'dark'
 }) {
   const scroll = useScroll()
   const scrollData = useRef({ current: 0 })
   const listSnap = useRef(0)
+  const theme = PRODUCT_THEMES[mode]
 
   useFrame((_, delta) => {
     const totalPages = selectedId !== null ? DETAIL_PAGES : LIST_PAGES
@@ -433,11 +488,12 @@ function ProductScene({
             scrollData={scrollData.current}
             selectedId={selectedId}
             onSelect={(id) => onSelectProduct(id)}
+            theme={theme}
           />
         ))}
       </Suspense>
       {selectedId !== null && selectedProduct && (
-        <DetailOverlay data={selectedProduct} scrollData={scrollData.current} onBack={handleBack} />
+        <DetailOverlay data={selectedProduct} scrollData={scrollData.current} onBack={handleBack} theme={theme} />
       )}
     </>
   )
@@ -450,6 +506,7 @@ type ProductsSandboxProps = {
 
 export default function ProductsSandbox({ detailSlug, parentSlug = 'products' }: ProductsSandboxProps) {
   const router = useRouter()
+  const mode = useAppStore((state) => state.mode)
   const routeSelectedId = detailSlug ? (PRODUCT_BY_SLUG.get(detailSlug)?.id ?? null) : null
   const [selectedId, setSelectedId] = useState<number | null>(() => routeSelectedId)
   const basePath = `/space/${parentSlug}`
@@ -495,7 +552,7 @@ export default function ProductsSandbox({ detailSlug, parentSlug = 'products' }:
           damping={0.2}
           style={{ pointerEvents: 'auto' }}
         >
-          <ProductScene selectedId={selectedId} onSelectProduct={handleSelectProduct} />
+          <ProductScene selectedId={selectedId} onSelectProduct={handleSelectProduct} mode={mode} />
         </ScrollControls>
       </Suspense>
     </>
