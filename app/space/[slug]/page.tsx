@@ -14,8 +14,9 @@ export default function SandboxPage() {
   const router = useRouter()
   const endTransition = useAppStore((state) => state.endTransition)
   const startTransition = useAppStore((state) => state.startTransition)
-  
-  const sandbox = sandboxes.find(s => s.slug === slug)
+  const customBackAction = useAppStore((state) => state.customBackAction)
+
+  const sandbox = sandboxes.find((s) => s.slug === slug)
   const Component = sandbox ? sandbox.component : null
 
   const [exiting, setExiting] = useState(false)
@@ -33,8 +34,13 @@ export default function SandboxPage() {
   }, [endTransition])
 
   const handleBack = () => {
+    if (customBackAction) {
+      customBackAction()
+      return
+    }
+
     setExiting(true)
-    startTransition(sandbox?.char || '') 
+    startTransition(sandbox?.char || '')
     setTimeout(() => {
       router.push('/')
     }, 1000)
@@ -42,7 +48,7 @@ export default function SandboxPage() {
 
   const mode = useAppStore((state) => state.mode)
 
-  if (!Component) return <div className="w-full h-full flex items-center justify-center text-white">Not found</div>
+  if (!Component) return <div className='w-full h-full flex items-center justify-center text-white'>Not found</div>
 
   return (
     <>
@@ -64,17 +70,17 @@ export default function SandboxPage() {
           </Suspense>
         </Three>
       </div>
-      
+
       {/* Page Overlay UI */}
-      <animated.div 
-        style={{ opacity: springs.x.to(x => x === '0vw' ? 1 : 0) }}
+      <animated.div
+        style={{ opacity: springs.x.to((x) => (x === '0vw' ? 1 : 0)) }}
         className={cn(
-            "absolute bottom-12 left-8 z-10 pointer-events-none max-w-md transition-opacity duration-500",
-            mode === 'dark' ? 'text-white' : 'text-black'
+          'absolute bottom-12 left-8 z-10 pointer-events-none max-w-md transition-opacity duration-500',
+          mode === 'dark' ? 'text-white' : 'text-black',
         )}
       >
-          <h1 className="text-6xl font-bold mb-4 tracking-tighter">{sandbox.title}</h1>
-          <p className="text-lg opacity-80 font-light leading-relaxed">{sandbox.description}</p>
+        <h1 className='text-6xl font-bold mb-4 tracking-tighter'>{sandbox.title}</h1>
+        <p className='text-lg opacity-80 font-light leading-relaxed'>{sandbox.description}</p>
       </animated.div>
     </>
   )

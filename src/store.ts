@@ -14,6 +14,8 @@ interface AppState {
   setNavOpen: (isOpen: boolean) => void
   activeSlug: string | null
   setActiveSlug: (slug: string | null) => void
+  customBackAction: (() => void) | null
+  setCustomBackAction: (action: (() => void) | null) => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -30,4 +32,6 @@ export const useAppStore = create<AppState>((set) => ({
   setNavOpen: (isOpen: boolean) => set({ isNavOpen: isOpen }),
   activeSlug: null,
   setActiveSlug: (slug: string | null) => set({ activeSlug: slug }),
+  customBackAction: null,
+  setCustomBackAction: (action) => set({ customBackAction: action }),
 }))
