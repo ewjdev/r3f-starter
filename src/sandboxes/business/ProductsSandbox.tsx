@@ -29,6 +29,12 @@ const PRODUCTS = Array.from({ length: 10 }, (_, i) => ({
 const LIST_PAGES = Math.ceil(PRODUCTS.length / ITEMS_PER_PAGE)
 const DETAIL_PAGES = 4 // Pages for scrolling through details
 
+const sineSnap = (value: number) => value - Math.sin(value * Math.PI * 2) / (Math.PI * 1.5)
+const magneticSnap = (value: number, maxPage: number, strength = 0.85) => {
+  const nearest = THREE.MathUtils.clamp(Math.round(value), 0, maxPage)
+  return THREE.MathUtils.lerp(value, nearest, strength)
+}
+
 function ScrollHandler({ selectedId }: { selectedId: number | null }) {
   const scroll = useScroll()
   const lastSelectedId = useRef(selectedId)
@@ -373,18 +379,19 @@ function ProductScene({
 }) {
   const scroll = useScroll()
   const scrollData = useRef({ current: 0 })
+  const listSnap = useRef(0)
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     const totalPages = selectedId !== null ? DETAIL_PAGES : LIST_PAGES
     const raw = scroll.offset * (totalPages - 1)
 
     if (selectedId !== null) {
-      // Snapping logic for detail sections
-      // Strong magnetic snap to integers
-      const snapped = raw - Math.sin(raw * Math.PI * 2) / (Math.PI * 1.5)
+      const snapped = sineSnap(raw)
       scrollData.current.current = snapped
     } else {
-      scrollData.current.current = raw
+      const stickyTarget = magneticSnap(raw, LIST_PAGES - 1, 0.9)
+      listSnap.current = THREE.MathUtils.damp(listSnap.current, stickyTarget, 18, delta)
+      scrollData.current.current = listSnap.current
     }
   })
 
