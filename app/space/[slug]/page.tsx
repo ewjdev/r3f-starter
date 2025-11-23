@@ -33,8 +33,13 @@ export default function SandboxPage() {
     }, 1000)
   }, [endTransition])
 
-  const handleBack = () => {
+  const handleBack = (e: React.MouseEvent) => {
+    // e.stopPropagation() might be needed if scroll controls interfere?
+    // But let's see if it even fires.
+    console.log('Back clicked. customBackAction:', !!customBackAction)
+
     if (customBackAction) {
+      console.log(typeof customBackAction === 'function')
       customBackAction()
       return
     }

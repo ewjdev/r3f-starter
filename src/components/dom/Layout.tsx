@@ -85,16 +85,6 @@ const Layout = ({ children }) => {
       onTouchStart={() => setIsHolding(true)}
       onTouchEnd={() => setIsHolding(false)}
     >
-      {children}
-      <HamburgerNav />
-      <ClickAndHold
-        isHolding={isHolding}
-        onTrigger={() => {
-          setMode(mode === 'light' ? 'dark' : 'light')
-          _setIsHolding(false)
-        }}
-        mode={mode}
-      />
       <Suspense fallback={null}>
         <Scene
           style={{
@@ -109,6 +99,16 @@ const Layout = ({ children }) => {
           eventPrefix='client'
         />
       </Suspense>
+      {children}
+      <HamburgerNav />
+      <ClickAndHold
+        isHolding={isHolding}
+        onTrigger={() => {
+          setMode(mode === 'light' ? 'dark' : 'light')
+          _setIsHolding(false)
+        }}
+        mode={mode}
+      />
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useGLTF, Float, OrthographicCamera, ScrollControls, useScroll } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import { Suspense, useMemo, useRef, useState, useEffect, useLayoutEffect } from 'react'
+import { Suspense, useMemo, useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react'
 import * as THREE from 'three'
 import { Root, Container, Text } from '@react-three/uikit'
 import { useAppStore } from '@/store'
@@ -222,8 +222,9 @@ function DetailOverlay({
   const setCustomBackAction = useAppStore((state) => state.setCustomBackAction)
 
   // Register custom back action
+  // We wrap the setter in a stable useEffect to avoid constant resets
   useEffect(() => {
-    setCustomBackAction(() => onBack)
+    setCustomBackAction(onBack)
     return () => setCustomBackAction(null)
   }, [onBack, setCustomBackAction])
 
@@ -389,6 +390,12 @@ function ProductScene({
 
   const selectedProduct = PRODUCTS.find((p) => p.id === selectedId)
 
+  // Stabilize the onBack callback
+  const handleBack = useCallback(() => {
+    console.log('handleBack')
+    setSelectedId(null)
+  }, [setSelectedId])
+
   return (
     <>
       <ScrollHandler selectedId={selectedId} />
@@ -409,7 +416,7 @@ function ProductScene({
       ))}
 
       {selectedId !== null && selectedProduct && (
-        <DetailOverlay data={selectedProduct} scrollData={scrollData.current} onBack={() => setSelectedId(null)} />
+        <DetailOverlay data={selectedProduct} scrollData={scrollData.current} onBack={handleBack} />
       )}
     </>
   )
