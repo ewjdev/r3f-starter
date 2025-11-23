@@ -101,22 +101,23 @@ function ProductItem({
     const isSelected = selectedId === data.id
     const isAnySelected = selectedId !== null
     // Simple mobile check based on viewport width or window width
-    // Typically viewport width < 10-12 corresponds to mobile in this setup
     const isMobile = window.innerWidth < 600
 
     if (isSelected) {
       // DETAIL MODE: Center the product
+      const scroll = scrollData.current
 
-      // On mobile, if text snaps ABOVE center (positive Y), product should snap BELOW center (negative Y)?
-      // Or just stay centered? If text is above, product at 0 is fine if text is high enough.
-      // But to "make room", let's push product down slightly on mobile.
-      const targetY = isMobile ? -height * 0.15 : 0
+      // Animate Product Position based on scroll
+      // Index 0 (Start): Bottom (-height * 0.15)
+      // Index >= 1 (Details): Top (height * 0.25)
+      const scrollProgress = THREE.MathUtils.clamp(scroll, 0, 1)
+      const mobileY = THREE.MathUtils.lerp(-height * 0.2, height * 0.15, scrollProgress)
+
+      const targetY = isMobile ? mobileY : 0
 
       // Use a responsive offset. If width is small (mobile), maybe center or slightly up.
       // For now, stick to left side but closer to center.
       const targetX = !isMobile ? -width * 0.2 : -3
-      // If mobile (width < 10 approx), maybe move Y up instead of X left?
-      // Let's just stick to X for now but less extreme.
 
       group.current.position.x = THREE.MathUtils.lerp(group.current.position.x, targetX, 0.1)
       group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, targetY, 0.1)
@@ -321,14 +322,18 @@ function DetailSection({
     // Center is Y=0.
     // Above center is Y > 0.
     // Let's shift the "center" point up by 20% of height.
-    const centerOffset = isMobile ? height * 0.1 : 0
+    const topOffset = isMobile ? height * 0.125 : 0
+    const bottomOffset = isMobile ? -height * 0.08 : 0
+
+    // Index 0 snaps to topOffset, others to bottomOffset
+    const centerOffset = index === 0 ? topOffset : bottomOffset
 
     const targetY = dist * -spacing + centerOffset
 
     // Horizontal Animation (Right to Left as it enters)
     // Move it to the right as it gets further from center
     // Factor 3 ensures visible movement
-    const targetX = absDist * 20 - 4
+    const targetX = absDist * 20 - 8
 
     // Zoom Animation
     // Scale 1.0 at center, 0.5 at edges (distance = 1)
