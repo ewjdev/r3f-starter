@@ -3,28 +3,42 @@
 import { useGLTF, Float, OrthographicCamera, ScrollControls, useScroll } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Suspense, useMemo, useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import * as THREE from 'three'
 import { Root, Container, Text } from '@react-three/uikit'
 import { useAppStore } from '@/store'
 
 // Increase item count to test performance, but stick to the requirement
 const ITEMS_PER_PAGE = 3
-const PRODUCTS = Array.from({ length: 10 }, (_, i) => ({
-  id: i,
-  name: `Air Max ${i + 1}`,
-  price: 199 + i * 20,
-  model: '/models/shoe-draco.glb',
-  color: ['#ff6b6b', '#4ecdc4', '#ffe66d', '#1a535c', '#ff9f1c'][i % 5],
-  url: `https://example.com/buy/${i}`,
-  description: [
-    'Lightweight comfort met with iconic design.',
-    'Maximum bounce for your daily run.',
-    'Urban style redefined for the modern era.',
-    'Pro performance for serious athletes.',
-    'Limited edition colorway for collectors.',
-  ][i % 5],
-  details: ['Breathable mesh upper', 'Responsive cushioning', 'Durable rubber outsole', 'Sustainable materials'],
-}))
+const createProductSlug = (name: string) =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+const PRODUCTS = Array.from({ length: 10 }, (_, i) => {
+  const name = `Air Max ${i + 1}`
+
+  return {
+    id: i,
+    name,
+    slug: createProductSlug(name),
+    price: 199 + i * 20,
+    model: '/models/shoe-draco.glb',
+    color: ['#ff6b6b', '#4ecdc4', '#ffe66d', '#1a535c', '#ff9f1c'][i % 5],
+    url: `https://example.com/buy/${i}`,
+    description: [
+      'Lightweight comfort met with iconic design.',
+      'Maximum bounce for your daily run.',
+      'Urban style redefined for the modern era.',
+      'Pro performance for serious athletes.',
+      'Limited edition colorway for collectors.',
+    ][i % 5],
+    details: ['Breathable mesh upper', 'Responsive cushioning', 'Durable rubber outsole', 'Sustainable materials'],
+  }
+})
+
+const PRODUCT_BY_SLUG = new Map(PRODUCTS.map((product) => [product.slug, product]))
 
 const LIST_PAGES = Math.ceil(PRODUCTS.length / ITEMS_PER_PAGE)
 const DETAIL_PAGES = 4 // Pages for scrolling through details
@@ -243,7 +257,7 @@ function DetailOverlay({
         <Text
           color='white'
           fontSize={width > 10 ? 96 : 48}
-          maxWidth={width > 10 ? 500 : mobileMaxWidth}
+          maxWidth={width > 10 ? 630 : mobileMaxWidth}
           lineHeight={1.5}
         >
           {data.description}
@@ -372,10 +386,10 @@ function DetailSection({
 
 function ProductScene({
   selectedId,
-  setSelectedId,
+  onSelectProduct,
 }: {
   selectedId: number | null
-  setSelectedId: (id: number | null) => void
+  onSelectProduct: (id: number | null) => void
 }) {
   const scroll = useScroll()
   const scrollData = useRef({ current: 0 })
@@ -400,8 +414,8 @@ function ProductScene({
   // Stabilize the onBack callback
   const handleBack = useCallback(() => {
     console.log('handleBack')
-    setSelectedId(null)
-  }, [setSelectedId])
+    onSelectProduct(null)
+  }, [onSelectProduct])
 
   return (
     <>
@@ -410,18 +424,18 @@ function ProductScene({
       <ambientLight intensity={0.5} />
       <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
       <pointLight position={[-10, -10, -10]} />
-
-      {PRODUCTS.map((product, index) => (
-        <ProductItem
-          key={product.id}
-          index={index}
-          data={product}
-          scrollData={scrollData.current}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-        />
-      ))}
-
+      <Suspense fallback={null}>
+        {PRODUCTS.map((product, index) => (
+          <ProductItem
+            key={product.id}
+            index={index}
+            data={product}
+            scrollData={scrollData.current}
+            selectedId={selectedId}
+            onSelect={(id) => onSelectProduct(id)}
+          />
+        ))}
+      </Suspense>
       {selectedId !== null && selectedProduct && (
         <DetailOverlay data={selectedProduct} scrollData={scrollData.current} onBack={handleBack} />
       )}
@@ -429,8 +443,47 @@ function ProductScene({
   )
 }
 
-export default function ProductsSandbox() {
-  const [selectedId, setSelectedId] = useState<number | null>(null)
+type ProductsSandboxProps = {
+  detailSlug?: string
+  parentSlug?: string
+}
+
+export default function ProductsSandbox({ detailSlug, parentSlug = 'products' }: ProductsSandboxProps) {
+  const router = useRouter()
+  const routeSelectedId = detailSlug ? (PRODUCT_BY_SLUG.get(detailSlug)?.id ?? null) : null
+  const [selectedId, setSelectedId] = useState<number | null>(() => routeSelectedId)
+  const basePath = `/space/${parentSlug}`
+
+  useEffect(() => {
+    setSelectedId(routeSelectedId)
+  }, [routeSelectedId])
+
+  const handleSelectProduct = useCallback(
+    (id: number | null) => {
+      if (id === null) {
+        setSelectedId(null)
+        router.replace(basePath, { scroll: false })
+        return
+      }
+
+      if (routeSelectedId === id) {
+        return
+      }
+
+      const product = PRODUCTS.find((p) => p.id === id)
+      if (!product) return
+
+      setSelectedId(id)
+
+      const targetUrl = `${basePath}/${product.slug}`
+      if (routeSelectedId === null) {
+        router.push(targetUrl, { scroll: false })
+      } else {
+        router.replace(targetUrl, { scroll: false })
+      }
+    },
+    [basePath, routeSelectedId, router],
+  )
 
   return (
     <>
@@ -442,7 +495,7 @@ export default function ProductsSandbox() {
           damping={0.2}
           style={{ pointerEvents: 'auto' }}
         >
-          <ProductScene selectedId={selectedId} setSelectedId={setSelectedId} />
+          <ProductScene selectedId={selectedId} onSelectProduct={handleSelectProduct} />
         </ScrollControls>
       </Suspense>
     </>

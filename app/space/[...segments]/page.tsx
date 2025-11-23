@@ -9,8 +9,10 @@ import { sandboxes } from '@/config/sandboxes'
 import { cn } from '@/utils'
 
 export default function SandboxPage() {
-  const params = useParams()
-  const slug = params?.slug as string
+  const params = useParams<{ segments: string[] }>()
+  const segments = params?.segments ?? []
+  const slug = Array.isArray(segments) ? segments[0] : undefined
+  const detailSlug = Array.isArray(segments) ? segments[1] : undefined
   const router = useRouter()
   const endTransition = useAppStore((state) => state.endTransition)
   const startTransition = useAppStore((state) => state.startTransition)
@@ -53,7 +55,8 @@ export default function SandboxPage() {
 
   const mode = useAppStore((state) => state.mode)
 
-  if (!Component) return <div className='w-full h-full flex items-center justify-center text-white'>Not found</div>
+  if (!Component || !slug)
+    return <div className='w-full h-full flex items-center justify-center text-white'>Not found</div>
 
   return (
     <>
@@ -71,7 +74,7 @@ export default function SandboxPage() {
 
         <Three>
           <Suspense fallback={null}>
-            <Component />
+            <Component parentSlug={slug} detailSlug={detailSlug} />
           </Suspense>
         </Three>
       </div>
