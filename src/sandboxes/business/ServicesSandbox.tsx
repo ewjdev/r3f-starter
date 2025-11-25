@@ -97,7 +97,7 @@ function Scene() {
   )
 }
 
-export default function ServicesSandbox() {
+export default function ServicesSandbox({ onHomePage }: { onHomePage?: boolean }) {
   return (
     <>
       <ambientLight intensity={0.5} />
@@ -107,7 +107,7 @@ export default function ServicesSandbox() {
 
       <ScrollControls pages={3} damping={0.3} style={{ pointerEvents: 'auto' }}>
         <Scene />
-        <Scroll html style={{ width: '100%', height: '100%' }}>
+        <Scroll html style={{ width: '100%', height: '100%', display: onHomePage ? 'none' : 'block' }}>
           {services.map((service, i) => (
             <Section key={i} index={i}>
               <h2 className='text-4xl font-bold mb-4' style={{ color: service.color }}>

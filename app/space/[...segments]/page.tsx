@@ -21,7 +21,7 @@ export default function SandboxPage() {
   const hydrated = useHydration()
 
   const sandbox = sandboxes.find((s) => s.slug === slug)
-  const Component = sandbox ? sandbox.component : null
+  const Component = sandbox ? sandbox.Component : null
 
   const [exiting, setExiting] = useState(false)
 

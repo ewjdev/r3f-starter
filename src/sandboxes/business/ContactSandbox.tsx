@@ -5,7 +5,7 @@ import { useAppStore } from '@/store'
 import { Html, Sparkles, Center, Text, OrthographicCamera } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 
-export default function ContactSandbox() {
+export default function ContactSandbox({ onHomePage }: { onHomePage?: boolean }) {
   const mode = useAppStore((state) => state.mode)
   const textColor = mode === 'dark' ? '#ffffff' : '#1a535c'
   const sparklesRef = useRef(null)
@@ -35,7 +35,13 @@ export default function ContactSandbox() {
         </Text>
       </Center>
 
-      <Html zIndexRange={[800, 900]} transform position={[0, -0.5, 0]} distanceFactor={20}>
+      <Html
+        zIndexRange={[800, 900]}
+        transform
+        position={[0, -0.5, 0]}
+        distanceFactor={20}
+        style={{ display: onHomePage ? 'none' : 'block' }}
+      >
         <div className='bg-white/90 p-6 rounded-xl shadow-2xl w-[350px] text-center backdrop-blur-sm'>
           <p className='mb-4 text-gray-600 text-sm'>Ready to start your project? Send us a message.</p>
           <form className='flex flex-col gap-3' onSubmit={(e) => e.preventDefault()}>
