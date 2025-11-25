@@ -33,7 +33,7 @@ export default function Generic2DPage({ title, description, slug, detailSlug, co
             background: `radial-gradient(circle at 50% 0%, ${color}40 0%, transparent 70%)`,
           }}
         />
-        <div className='relative max-w-6xl mx-auto px-6 py-20 md:py-32'>
+        <div className='relative max-w-6xl mx-auto px-6 py-5 md:py-10'>
           <Link
             href='/'
             className={cn(

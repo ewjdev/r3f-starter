@@ -70,11 +70,21 @@ export function Letter({ char, slug, children, stencilBuffer = false, ...props }
         >
           {char}
           <MeshTransmissionMaterial
+            backside
             clearcoat={1}
-            samples={3}
-            thickness={40}
-            chromaticAberration={0.25}
-            anisotropy={0.4}
+            samples={8}
+            resolution={512}
+            thickness={0.3}
+            roughness={0.2}
+            anisotropy={1}
+            chromaticAberration={0.2}
+            // />
+            // <MeshTransmissionMaterial
+            //   clearcoat={1}
+            //   samples={3}
+            //   thickness={40}
+            //   chromaticAberration={0.25}
+            //   anisotropy={0.4}
           >
             <RenderTexture
               attach='buffer'
@@ -88,7 +98,7 @@ export function Letter({ char, slug, children, stencilBuffer = false, ...props }
                 return false
               }}
             >
-              {props.color && <color attach='background' args={[props.color as string]} />}
+              {/* {props.color && <color attach='background' args={[props.color as string]} />} */}
               <group ref={contents} matrixAutoUpdate={false}>
                 {children}
               </group>
