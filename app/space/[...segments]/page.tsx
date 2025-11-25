@@ -42,9 +42,16 @@ export default function SandboxPage() {
   const handleBack = () => {
     setExiting(true)
     startTransition(sandbox?.char || '')
-    setTimeout(() => {
-      router.push('/')
-    }, 1000)
+    setTimeout(
+      () => {
+        if (detailSlug) {
+          router.push(`/space/${slug}`)
+        } else {
+          router.push('/')
+        }
+      },
+      detailSlug ? 0 : 500,
+    )
   }
 
   const mode = useAppStore((state) => state.mode)
@@ -76,6 +83,7 @@ export default function SandboxPage() {
         title={sandbox.title}
         description={sandbox.description}
         slug={sandbox.slug}
+        detailSlug={detailSlug}
         color={sandbox.color}
       />
     )
