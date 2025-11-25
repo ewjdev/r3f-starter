@@ -74,7 +74,7 @@ export default function HamburgerNav() {
         className={cn(
           'fixed z-[10001] top-0 right-0 h-screen w-full md:w-96 backdrop-blur-xl flex flex-col justify-center items-center gap-8 shadow-2xl border-l',
           isDarkMode ? 'bg-black/90 text-white border-white/10' : 'bg-white/90 text-black border-black/10',
-          !isNavOpen && 'pointer-events-none'
+          !isNavOpen && 'pointer-events-none',
         )}
         style={{ transform: x.to((x) => `translateX(${x}%)`) }}
       >
@@ -106,10 +106,10 @@ export default function HamburgerNav() {
                 className={cn(
                   'text-sm font-medium transition-opacity',
                   isDarkMode ? 'text-slate-400' : 'text-slate-500',
-                  is3D ? 'opacity-50' : 'opacity-100'
+                  is3D ? 'opacity-50' : 'opacity-100',
                 )}
               >
-                2D
+                3D
               </span>
 
               <button
@@ -118,11 +118,11 @@ export default function HamburgerNav() {
                   'relative w-14 h-8 rounded-full transition-colors duration-300',
                   isDarkMode
                     ? is3D
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600'
+                      ? 'bg-gradient-to-r from-gray-600 to-cyan-700'
                       : 'bg-slate-700'
                     : is3D
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-500'
-                      : 'bg-slate-300'
+                      ? 'bg-gradient-to-r from-cyan-500 to-gray-600'
+                      : 'bg-slate-300',
                 )}
                 aria-label={`Switch to ${is3D ? '2D' : '3D'} mode`}
               >
@@ -131,7 +131,7 @@ export default function HamburgerNav() {
                   className={cn(
                     'absolute top-1 left-1 w-6 h-6 rounded-full shadow-md',
                     'flex items-center justify-center text-xs font-bold',
-                    isDarkMode ? 'bg-white text-slate-900' : 'bg-white text-slate-700'
+                    isDarkMode ? 'bg-white text-slate-900' : 'bg-white text-slate-700',
                   )}
                 >
                   {is3D ? (
@@ -160,10 +160,10 @@ export default function HamburgerNav() {
                 className={cn(
                   'text-sm font-medium transition-opacity',
                   isDarkMode ? 'text-slate-400' : 'text-slate-500',
-                  is3D ? 'opacity-100' : 'opacity-50'
+                  is3D ? 'opacity-100' : 'opacity-50',
                 )}
               >
-                3D
+                2D
               </span>
             </div>
           </div>
