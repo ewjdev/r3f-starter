@@ -76,6 +76,7 @@ export default function SandboxPage() {
         title={sandbox.title}
         description={sandbox.description}
         slug={sandbox.slug}
+        detailSlug={detailSlug}
         color={sandbox.color}
       />
     )

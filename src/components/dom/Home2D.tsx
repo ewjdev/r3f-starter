@@ -39,14 +39,15 @@ export default function Home2D() {
         />
         <div className='relative max-w-6xl mx-auto px-6 py-32 md:py-48'>
           <h1
-            className='text-6xl md:text-8xl font-bold mb-6 tracking-tight'
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            className='text-6xl md:text-8xl font-bold mb-6 tracking-tight font-stack'
           >
             Your Business
             <span
               className={cn(
-                'block bg-clip-text text-transparent',
-                'bg-gradient-to-r from-blue-500 to-purple-500'
+                'block text-transparent bg-clip-text',
+                isDark
+                  ? 'bg-gradient-to-r from-blue-400 to-purple-400'
+                  : 'bg-gradient-to-r from-blue-600 to-purple-600'
               )}
             >
               Reimagined
@@ -171,7 +172,7 @@ function PageBlock({
   isDark: boolean
 }) {
   const spring = useSpring({
-    from: { opacity: 0, scale: 0.8, y: 30 },
+    from: { opacity: 0, scale: 0.9, y: 20 },
     to: { opacity: 1, scale: 1, y: 0 },
     delay: 200 + index * 100,
     config: { tension: 200, friction: 25 },
@@ -182,35 +183,58 @@ function PageBlock({
       <Link
         href={`/space/${page.slug}`}
         className={cn(
-          'block aspect-square rounded-3xl transition-all duration-300 group relative overflow-hidden',
-          'hover:scale-105 hover:shadow-2xl'
+          'group block h-full p-8 rounded-3xl transition-all duration-500',
+          'border hover:border-transparent',
+          isDark
+            ? 'bg-white/5 border-white/10 hover:bg-white/10'
+            : 'bg-white border-slate-100 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50'
         )}
-        style={{ backgroundColor: page.color }}
       >
-        {/* Large Letter */}
-        <div className='absolute inset-0 flex items-center justify-center'>
-          <span
-            className='text-8xl md:text-9xl font-black opacity-30 group-hover:opacity-50 transition-opacity'
-            style={{ color: isDark ? '#000' : '#fff' }}
-          >
-            {page.char}
-          </span>
-        </div>
-
-        {/* Content */}
-        <div className='absolute inset-0 flex flex-col items-center justify-end p-6 text-center'>
-          <h3
-            className='text-xl md:text-2xl font-bold mb-1'
-            style={{ color: page.color === '#ffe66d' ? '#0b0d12' : '#ffffff' }}
-          >
-            {page.title}
-          </h3>
-          <p
-            className='text-sm opacity-80 hidden md:block'
-            style={{ color: page.color === '#ffe66d' ? '#0b0d12' : '#ffffff' }}
-          >
-            {page.description}
-          </p>
+        <div className='flex flex-col h-full justify-between gap-8'>
+          <div className='flex items-start justify-between'>
+            <span
+              className={cn(
+                'text-4xl font-light',
+                isDark ? 'text-white/20 group-hover:text-white/40' : 'text-slate-200 group-hover:text-slate-300'
+              )}
+            >
+              0{index + 1}
+            </span>
+            <div
+              className={cn(
+                'w-10 h-10 rounded-full flex items-center justify-center transition-colors',
+                isDark ? 'bg-white/10 group-hover:bg-white/20' : 'bg-slate-50 group-hover:bg-blue-50'
+              )}
+            >
+              <svg 
+                className={cn('w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5', isDark ? 'text-white' : 'text-slate-900')} 
+                fill='none' 
+                viewBox='0 0 24 24' 
+                stroke='currentColor'
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 17L17 7M17 7H7M17 7V17' />
+              </svg>
+            </div>
+          </div>
+          
+          <div>
+            <h3
+              className={cn(
+                'text-2xl font-medium mb-2 transition-colors',
+                isDark ? 'text-white' : 'text-slate-900 group-hover:text-blue-600'
+              )}
+            >
+              {page.title}
+            </h3>
+            <p
+              className={cn(
+                'text-sm leading-relaxed',
+                isDark ? 'text-slate-400' : 'text-slate-500'
+              )}
+            >
+              {page.description}
+            </p>
+          </div>
         </div>
       </Link>
     </animated.div>

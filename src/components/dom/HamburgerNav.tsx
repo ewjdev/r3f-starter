@@ -74,6 +74,7 @@ export default function HamburgerNav() {
         className={cn(
           'fixed z-[10001] top-0 right-0 h-screen w-full md:w-96 backdrop-blur-xl flex flex-col justify-center items-center gap-8 shadow-2xl border-l',
           isDarkMode ? 'bg-black/90 text-white border-white/10' : 'bg-white/90 text-black border-black/10',
+          !isNavOpen && 'pointer-events-none'
         )}
         style={{ transform: x.to((x) => `translateX(${x}%)`) }}
       >
