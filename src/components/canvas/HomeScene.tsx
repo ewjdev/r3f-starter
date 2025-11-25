@@ -70,7 +70,7 @@ export default function HomeScene() {
         >
           {/** On top of the HDRI we add some rectangular and circular shapes for nicer reflections */}
           <group rotation={[-Math.PI / 3, 0, 0]}>
-            <Lightformer
+            {/* <Lightformer
               intensity={mode === 'dark' ? 2 : 0}
               rotation-x={Math.PI / 2}
               position={[0, 5, -9]}
@@ -97,7 +97,7 @@ export default function HomeScene() {
               rotation-y={-Math.PI / 2}
               position={[10, 1, 0]}
               scale={[50, 2, 1]}
-            />
+            /> */}
           </group>
         </Environment>
       </Suspense>
@@ -113,7 +113,7 @@ export default function HomeScene() {
 
       {/** Yomotsu/camera-controls, a better replacement for OrbitControls */}
       <CameraControls
-        maxDistance={60}
+        maxDistance={35}
         minDistance={10}
         makeDefault
         dollyToCursor

@@ -16,7 +16,7 @@ export default function Scene({ ...props }) {
         // Lower min DPR from 1.5 to 1 for better mobile performance
         // Max stays at 2 for crisp rendering on high-DPI displays
         dpr={[1, 2]}
-        camera={{ position: [-20, 40, 30], fov: 45, near: 1, far: 60 }}
+        camera={{ position: [-20, 35, 30], fov: 45, near: 1, far: 60 }}
       >
         {/* @ts-ignore */}
         <Transition />
