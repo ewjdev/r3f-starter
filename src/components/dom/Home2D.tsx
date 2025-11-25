@@ -18,36 +18,26 @@ export default function Home2D() {
   })
 
   return (
-    <div
-      className={cn(
-        'min-h-screen',
-        isDark ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'
-      )}
-    >
+    <div className={cn('min-h-screen', isDark ? 'bg-slate-950 text-white' : 'bg-white text-slate-900')}>
       {/* Hero Section */}
-      <animated.section
-        style={heroSpring}
-        className='relative overflow-hidden'
-      >
+      <animated.section style={heroSpring} className='relative overflow-hidden'>
         <div
           className={cn(
             'absolute inset-0 opacity-30',
             isDark
               ? 'bg-gradient-to-br from-blue-900/50 via-transparent to-purple-900/50'
-              : 'bg-gradient-to-br from-blue-100 via-transparent to-purple-100'
+              : 'bg-gradient-to-br from-blue-100 via-transparent to-purple-100',
           )}
         />
         <div className='relative max-w-6xl mx-auto px-6 py-32 md:py-48'>
-          <h1
-            className='text-6xl md:text-8xl font-bold mb-6 tracking-tight font-stack'
-          >
+          <h1 className='text-6xl md:text-8xl font-bold mb-6 tracking-tight font-stack'>
             Your Business
             <span
               className={cn(
                 'block text-transparent bg-clip-text',
                 isDark
                   ? 'bg-gradient-to-r from-blue-400 to-purple-400'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600'
+                  : 'bg-gradient-to-r from-blue-600 to-purple-600',
               )}
             >
               Reimagined
@@ -56,19 +46,19 @@ export default function Home2D() {
           <p
             className={cn(
               'text-xl md:text-2xl max-w-2xl leading-relaxed',
-              isDark ? 'text-slate-300' : 'text-slate-600'
+              isDark ? 'text-slate-300' : 'text-slate-600',
             )}
           >
-            A modern, fast, and beautiful website for your business.
-            Built with the latest technologies for the best user experience.
+            A modern, fast, and beautiful website for your business. Built with the latest technologies for the best
+            user experience.
           </p>
           <div className='mt-10 flex flex-wrap gap-4'>
             <Link
               href='/space/contact'
               className={cn(
                 'px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300',
-                'bg-gradient-to-r from-blue-600 to-purple-600 text-white',
-                'hover:shadow-xl hover:shadow-blue-500/25 hover:-translate-y-0.5'
+                'bg-gradient-to-r from-gray-600 to-gray-800 text-white',
+                'hover:shadow-xl hover:shadow-blue-500/25 hover:-translate-y-0.5',
               )}
             >
               Get Started
@@ -79,7 +69,7 @@ export default function Home2D() {
                 'px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 border-2',
                 isDark
                   ? 'border-slate-700 hover:border-slate-500 hover:bg-slate-800/50'
-                  : 'border-slate-200 hover:border-slate-400 hover:bg-slate-50'
+                  : 'border-slate-200 hover:border-slate-400 hover:bg-slate-50',
               )}
             >
               Learn More
@@ -92,10 +82,7 @@ export default function Home2D() {
       <section className={cn('py-24', isDark ? 'bg-slate-900/50' : 'bg-slate-50')}>
         <div className='max-w-6xl mx-auto px-6'>
           <h2
-            className={cn(
-              'text-3xl md:text-4xl font-bold mb-12 text-center',
-              isDark ? 'text-white' : 'text-slate-900'
-            )}
+            className={cn('text-3xl md:text-4xl font-bold mb-12 text-center', isDark ? 'text-white' : 'text-slate-900')}
           >
             Explore
           </h2>
@@ -125,7 +112,12 @@ export default function Home2D() {
               isDark={isDark}
               icon={
                 <svg className='w-8 h-8' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z' />
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={1.5}
+                    d='M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z'
+                  />
                 </svg>
               }
               title='Responsive'
@@ -135,7 +127,12 @@ export default function Home2D() {
               isDark={isDark}
               icon={
                 <svg className='w-8 h-8' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01' />
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={1.5}
+                    d='M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01'
+                  />
                 </svg>
               }
               title='Customizable'
@@ -147,15 +144,10 @@ export default function Home2D() {
 
       {/* Footer */}
       <footer
-        className={cn(
-          'py-12 border-t',
-          isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50'
-        )}
+        className={cn('py-12 border-t', isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50')}
       >
         <div className='max-w-6xl mx-auto px-6 text-center'>
-          <p className={isDark ? 'text-slate-400' : 'text-slate-500'}>
-            © 2024 Your Business. All rights reserved.
-          </p>
+          <p className={isDark ? 'text-slate-400' : 'text-slate-500'}>© 2024 Your Business. All rights reserved.</p>
         </div>
       </footer>
     </div>
@@ -187,7 +179,7 @@ function PageBlock({
           'border hover:border-transparent',
           isDark
             ? 'bg-white/5 border-white/10 hover:bg-white/10'
-            : 'bg-white border-slate-100 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50'
+            : 'bg-white border-slate-100 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50',
         )}
       >
         <div className='flex flex-col h-full justify-between gap-8'>
@@ -195,7 +187,7 @@ function PageBlock({
             <span
               className={cn(
                 'text-4xl font-light',
-                isDark ? 'text-white/20 group-hover:text-white/40' : 'text-slate-200 group-hover:text-slate-300'
+                isDark ? 'text-white/20 group-hover:text-white/40' : 'text-slate-200 group-hover:text-slate-300',
               )}
             >
               0{index + 1}
@@ -203,35 +195,33 @@ function PageBlock({
             <div
               className={cn(
                 'w-10 h-10 rounded-full flex items-center justify-center transition-colors',
-                isDark ? 'bg-white/10 group-hover:bg-white/20' : 'bg-slate-50 group-hover:bg-blue-50'
+                isDark ? 'bg-white/10 group-hover:bg-white/20' : 'bg-slate-50 group-hover:bg-blue-50',
               )}
             >
-              <svg 
-                className={cn('w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5', isDark ? 'text-white' : 'text-slate-900')} 
-                fill='none' 
-                viewBox='0 0 24 24' 
+              <svg
+                className={cn(
+                  'w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
+                  isDark ? 'text-white' : 'text-slate-900',
+                )}
+                fill='none'
+                viewBox='0 0 24 24'
                 stroke='currentColor'
               >
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 17L17 7M17 7H7M17 7V17' />
               </svg>
             </div>
           </div>
-          
+
           <div>
             <h3
               className={cn(
                 'text-2xl font-medium mb-2 transition-colors',
-                isDark ? 'text-white' : 'text-slate-900 group-hover:text-blue-600'
+                isDark ? 'text-white' : 'text-slate-900 group-hover:text-blue-600',
               )}
             >
               {page.title}
             </h3>
-            <p
-              className={cn(
-                'text-sm leading-relaxed',
-                isDark ? 'text-slate-400' : 'text-slate-500'
-              )}
-            >
+            <p className={cn('text-sm leading-relaxed', isDark ? 'text-slate-400' : 'text-slate-500')}>
               {page.description}
             </p>
           </div>
@@ -253,28 +243,16 @@ function FeatureCard({
   description: string
 }) {
   return (
-    <div
-      className={cn(
-        'p-6 rounded-2xl text-center',
-        isDark ? 'bg-slate-800/30' : 'bg-slate-50'
-      )}
-    >
+    <div className={cn('p-6 rounded-2xl text-center', isDark ? 'bg-slate-800/30' : 'bg-slate-50')}>
       <div
         className={cn(
           'w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center',
-          isDark ? 'bg-slate-700 text-blue-400' : 'bg-blue-100 text-blue-600'
+          isDark ? 'bg-slate-700 text-blue-400' : 'bg-blue-100 text-blue-600',
         )}
       >
         {icon}
       </div>
-      <h3
-        className={cn(
-          'text-xl font-bold mb-2',
-          isDark ? 'text-white' : 'text-slate-900'
-        )}
-      >
-        {title}
-      </h3>
+      <h3 className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-slate-900')}>{title}</h3>
       <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>{description}</p>
     </div>
   )
