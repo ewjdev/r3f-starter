@@ -38,15 +38,10 @@ export default function HomeScene() {
       <PerspectiveCamera makeDefault position={[-20, 35, 30]} fov={45} near={1} far={90} />
       {/** The physics world */}
       <Physics gravity={[0, -60, 0]}>
-        {sandboxes.map((s) => (
-          <Letter
-            key={s.slug}
-            slug={s.slug}
-            char={s.char}
-            color={s.color}
-            position={s.position}
-            rotation={s.rotation}
-          />
+        {sandboxes.map(({ Component, ...s }) => (
+          <Letter key={s.slug} slug={s.slug} char={s.char} color={s.color} position={s.position} rotation={s.rotation}>
+            <Component onHomePage />
+          </Letter>
         ))}
 
         {/** Invisible walls */}

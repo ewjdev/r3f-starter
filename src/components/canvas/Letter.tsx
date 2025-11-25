@@ -74,10 +74,10 @@ export function Letter({ char, slug, children, stencilBuffer = false, ...props }
             clearcoat={1}
             samples={8}
             resolution={512}
-            thickness={0.3}
+            thickness={40}
             roughness={0.2}
-            anisotropy={1}
-            chromaticAberration={0.2}
+            anisotropy={0.4}
+            chromaticAberration={0.25}
             // />
             // <MeshTransmissionMaterial
             //   clearcoat={1}
@@ -88,7 +88,7 @@ export function Letter({ char, slug, children, stencilBuffer = false, ...props }
           >
             <RenderTexture
               attach='buffer'
-              stencilBuffer={stencilBuffer}
+              // stencilBuffer={stencilBuffer}
               width={512}
               height={512}
               compute={(event, state, previous) => {

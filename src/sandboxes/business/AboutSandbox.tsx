@@ -163,7 +163,7 @@ function Scene({ snippets }: { snippets: SnippetConfig[] }) {
   )
 }
 
-export default function AboutSandbox() {
+export default function AboutSandbox({ onHomePage }: { onHomePage?: boolean }) {
   const snippets = useMemo(() => createSnippets(12), [])
 
   return (
@@ -174,9 +174,9 @@ export default function AboutSandbox() {
       <OrthographicCamera makeDefault position={[0, 0, 12]} zoom={18} />
 
       <ScrollControls pages={3} damping={0.2}>
-        <Scene snippets={snippets} />
+        {!onHomePage && <Scene snippets={snippets} />}
 
-        <Scroll html style={{ width: '100%', height: '100%' }}>
+        <Scroll html style={{ width: '100%', height: '100%', display: onHomePage ? 'none' : 'block' }}>
           <div className='w-full text-white pointer-events-auto'>
             <section className='min-h-screen flex items-center justify-center px-6 md:px-16'>
               <div className='max-w-3xl w-full bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 backdrop-blur-xl shadow-2xl'>

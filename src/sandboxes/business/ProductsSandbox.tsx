@@ -523,9 +523,10 @@ function ProductScene({
 type ProductsSandboxProps = {
   detailSlug?: string
   parentSlug?: string
+  onHomePage?: boolean
 }
 
-export default function ProductsSandbox({ detailSlug, parentSlug = 'products' }: ProductsSandboxProps) {
+export default function ProductsSandbox({ detailSlug, parentSlug = 'products', onHomePage }: ProductsSandboxProps) {
   const router = useRouter()
   const mode = useAppStore((state) => state.mode)
   const isMobile = useMobileCheck()
@@ -567,7 +568,7 @@ export default function ProductsSandbox({ detailSlug, parentSlug = 'products' }:
   return (
     <>
       <OrthographicCamera makeDefault position={[0, 0, 10]} zoom={15} />
-
+      <color attach='background' args={onHomePage ? ['#ff0000'] : ['#010a13']} />
       <Suspense fallback={<LoadingFallback />}>
         <ScrollControls
           pages={selectedId !== null ? DETAIL_PAGES : LIST_PAGES}
