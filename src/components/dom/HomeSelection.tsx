@@ -35,9 +35,7 @@ export default function HomeSelection() {
       className={cn(
         'fixed inset-0 z-[10000] flex flex-col items-center justify-center',
         'bg-gradient-to-br',
-        isDark
-          ? 'from-slate-950 via-slate-900 to-slate-950'
-          : 'from-slate-50 via-white to-slate-100'
+        isDark ? 'from-slate-950 via-slate-900 to-slate-950' : 'from-slate-50 via-white to-slate-100',
       )}
     >
       {/* Decorative background elements */}
@@ -45,33 +43,25 @@ export default function HomeSelection() {
         <div
           className={cn(
             'absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-3xl opacity-20',
-            isDark ? 'bg-blue-500' : 'bg-blue-300'
+            isDark ? 'bg-cyan-500' : 'bg-cyan-300',
           )}
         />
         <div
           className={cn(
             'absolute bottom-1/4 -right-32 w-96 h-96 rounded-full blur-3xl opacity-20',
-            isDark ? 'bg-purple-500' : 'bg-purple-300'
+            isDark ? 'bg-gray-500' : 'bg-gray-300',
           )}
         />
       </div>
 
       <animated.div style={fadeIn} className='relative z-10 text-center px-6 max-w-2xl'>
         <h1
-          className={cn(
-            'text-5xl md:text-7xl font-bold mb-6 tracking-tight',
-            isDark ? 'text-white' : 'text-slate-900'
-          )}
+          className={cn('text-5xl md:text-7xl font-bold mb-6 tracking-tight', isDark ? 'text-white' : 'text-slate-900')}
           style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
         >
           Welcome
         </h1>
-        <p
-          className={cn(
-            'text-lg md:text-xl mb-12 leading-relaxed',
-            isDark ? 'text-slate-300' : 'text-slate-600'
-          )}
-        >
+        <p className={cn('text-lg md:text-xl mb-12 leading-relaxed', isDark ? 'text-slate-300' : 'text-slate-600')}>
           Choose your experience. You can switch between modes at any time.
         </p>
 
@@ -83,17 +73,12 @@ export default function HomeSelection() {
               'group relative px-10 py-5 rounded-2xl font-semibold text-lg transition-all duration-300',
               'overflow-hidden',
               isDark
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-2xl hover:shadow-blue-500/30'
-                : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:shadow-2xl hover:shadow-blue-500/40'
+                ? 'bg-gradient-to-r from-gray-600 to-gray-100 text-white hover:shadow-2xl hover:shadow-cyan-500/30'
+                : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:shadow-2xl hover:shadow-blue-500/40',
             )}
           >
             <span className='relative z-10 flex items-center gap-3'>
-              <svg
-                className='w-6 h-6'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
+              <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path
                   strokeLinecap='round'
                   strokeLinejoin='round'
@@ -114,16 +99,11 @@ export default function HomeSelection() {
               'border-2',
               isDark
                 ? 'border-slate-600 text-white hover:border-slate-400 hover:bg-slate-800/50'
-                : 'border-slate-300 text-slate-800 hover:border-slate-500 hover:bg-slate-100'
+                : 'border-slate-300 text-slate-800 hover:border-cyan-500 hover:bg-cyan-100',
             )}
           >
             <span className='relative z-10 flex items-center gap-3'>
-              <svg
-                className='w-6 h-6'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
+              <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path
                   strokeLinecap='round'
                   strokeLinejoin='round'
@@ -136,16 +116,10 @@ export default function HomeSelection() {
           </animated.button>
         </div>
 
-        <p
-          className={cn(
-            'mt-8 text-sm',
-            isDark ? 'text-slate-500' : 'text-slate-400'
-          )}
-        >
+        <p className={cn('mt-8 text-sm', isDark ? 'text-slate-500' : 'text-slate-400')}>
           Tip: Hold the top-left corner to toggle light/dark mode
         </p>
       </animated.div>
     </div>
   )
 }
-

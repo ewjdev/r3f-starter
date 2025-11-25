@@ -35,7 +35,7 @@ export default function HomeScene() {
   })
   return (
     <>
-      <PerspectiveCamera makeDefault position={[-20, 35, 30]} fov={45} near={1} far={90} />
+      {/* <PerspectiveCamera makeDefault position={[-20, 35, 30]} fov={45} near={1} far={60} /> */}
       {/** The physics world */}
       <Physics gravity={[0, -60, 0]}>
         {sandboxes.map(({ Component, ...s }) => (
@@ -61,17 +61,17 @@ export default function HomeScene() {
         <Environment
           files='https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/rogland_clear_night_1k.hdr'
           resolution={512}
-          environmentIntensity={1}
+          environmentIntensity={2}
         >
           {/** On top of the HDRI we add some rectangular and circular shapes for nicer reflections */}
           <group rotation={[-Math.PI / 3, 0, 0]}>
-            {/* <Lightformer
+            <Lightformer
               intensity={mode === 'dark' ? 2 : 0}
               rotation-x={Math.PI / 2}
               position={[0, 5, -9]}
               scale={[10, 10, 1]}
             />
-            {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (
+            {/* {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (
               <Lightformer
                 key={i}
                 form='circle'
@@ -80,7 +80,7 @@ export default function HomeScene() {
                 position={[x, 4, i * 4]}
                 scale={[4, 1, 1]}
               />
-            ))}
+            ))} */}
             <Lightformer
               intensity={mode === 'dark' ? 2 : 0}
               rotation-y={Math.PI / 2}
@@ -92,7 +92,7 @@ export default function HomeScene() {
               rotation-y={-Math.PI / 2}
               position={[10, 1, 0]}
               scale={[50, 2, 1]}
-            /> */}
+            />
           </group>
         </Environment>
       </Suspense>
@@ -110,6 +110,7 @@ export default function HomeScene() {
       <CameraControls
         maxDistance={35}
         minDistance={10}
+        distance={35}
         makeDefault
         dollyToCursor
         minPolarAngle={0}
