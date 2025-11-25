@@ -419,7 +419,7 @@ function DetailSection({
     // Horizontal Animation (Right to Left as it enters)
     // Move it to the right as it gets further from center
     // Factor 3 ensures visible movement
-    const targetX = absDist * 20 - 8
+    const targetX = absDist * 20
 
     // Zoom Animation
     // Scale 1.0 at center, 0.5 at edges (distance = 1)

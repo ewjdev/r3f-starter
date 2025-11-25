@@ -4,34 +4,7 @@ import { useSpring, animated } from '@react-spring/web'
 import { useAppStore } from '@/store'
 import { cn } from '@/utils'
 import Link from 'next/link'
-
-// Mock pages data - in production this would come from sandboxes config
-const pages = [
-  {
-    slug: 'about',
-    title: 'About Us',
-    description: 'Learn more about our story and mission.',
-    color: '#ff6b6b',
-  },
-  {
-    slug: 'services',
-    title: 'Services',
-    description: 'Explore the services we offer.',
-    color: '#4ecdc4',
-  },
-  {
-    slug: 'products',
-    title: 'Products',
-    description: 'Browse our latest products.',
-    color: '#ffe66d',
-  },
-  {
-    slug: 'contact',
-    title: 'Contact',
-    description: 'Get in touch with us.',
-    color: '#1a535c',
-  },
-]
+import { sandboxes } from '@/config/sandboxes'
 
 export default function Home2D() {
   const mode = useAppStore((state) => state.mode)
@@ -88,7 +61,7 @@ export default function Home2D() {
             A modern, fast, and beautiful website for your business.
             Built with the latest technologies for the best user experience.
           </p>
-          <div className='mt-10 flex gap-4'>
+          <div className='mt-10 flex flex-wrap gap-4'>
             <Link
               href='/space/contact'
               className={cn(
@@ -114,7 +87,7 @@ export default function Home2D() {
         </div>
       </animated.section>
 
-      {/* Pages Grid */}
+      {/* Navigation Blocks - Mirrors the 3D letter blocks */}
       <section className={cn('py-24', isDark ? 'bg-slate-900/50' : 'bg-slate-50')}>
         <div className='max-w-6xl mx-auto px-6'>
           <h2
@@ -123,11 +96,11 @@ export default function Home2D() {
               isDark ? 'text-white' : 'text-slate-900'
             )}
           >
-            Explore Our Pages
+            Explore
           </h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            {pages.map((page, index) => (
-              <PageCard key={page.slug} page={page} index={index} isDark={isDark} />
+          <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
+            {sandboxes.map((page, index) => (
+              <PageBlock key={page.slug} page={page} index={index} isDark={isDark} />
             ))}
           </div>
         </div>
@@ -188,18 +161,18 @@ export default function Home2D() {
   )
 }
 
-function PageCard({
+function PageBlock({
   page,
   index,
   isDark,
 }: {
-  page: { slug: string; title: string; description: string; color: string }
+  page: { slug: string; title: string; description: string; color: string; char: string }
   index: number
   isDark: boolean
 }) {
   const spring = useSpring({
-    from: { opacity: 0, y: 30 },
-    to: { opacity: 1, y: 0 },
+    from: { opacity: 0, scale: 0.8, y: 30 },
+    to: { opacity: 1, scale: 1, y: 0 },
     delay: 200 + index * 100,
     config: { tension: 200, friction: 25 },
   })
@@ -209,39 +182,35 @@ function PageCard({
       <Link
         href={`/space/${page.slug}`}
         className={cn(
-          'block p-8 rounded-2xl transition-all duration-300 group',
-          isDark
-            ? 'bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50'
-            : 'bg-white hover:bg-slate-50 border border-slate-200 shadow-sm hover:shadow-lg'
+          'block aspect-square rounded-3xl transition-all duration-300 group relative overflow-hidden',
+          'hover:scale-105 hover:shadow-2xl'
         )}
+        style={{ backgroundColor: page.color }}
       >
-        <div
-          className='w-12 h-12 rounded-xl mb-4 flex items-center justify-center text-white font-bold text-xl'
-          style={{ backgroundColor: page.color }}
-        >
-          {page.title[0]}
+        {/* Large Letter */}
+        <div className='absolute inset-0 flex items-center justify-center'>
+          <span
+            className='text-8xl md:text-9xl font-black opacity-30 group-hover:opacity-50 transition-opacity'
+            style={{ color: isDark ? '#000' : '#fff' }}
+          >
+            {page.char}
+          </span>
         </div>
-        <h3
-          className={cn(
-            'text-2xl font-bold mb-2 group-hover:text-blue-500 transition-colors',
-            isDark ? 'text-white' : 'text-slate-900'
-          )}
-        >
-          {page.title}
-        </h3>
-        <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-          {page.description}
-        </p>
-        <div
-          className={cn(
-            'mt-4 flex items-center gap-2 font-medium',
-            'text-blue-500 group-hover:gap-3 transition-all'
-          )}
-        >
-          Explore
-          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
-          </svg>
+
+        {/* Content */}
+        <div className='absolute inset-0 flex flex-col items-center justify-end p-6 text-center'>
+          <h3
+            className='text-xl md:text-2xl font-bold mb-1'
+            style={{ color: page.color === '#ffe66d' ? '#0b0d12' : '#ffffff' }}
+          >
+            {page.title}
+          </h3>
+          <p
+            className='text-sm opacity-80 hidden md:block'
+            style={{ color: page.color === '#ffe66d' ? '#0b0d12' : '#ffffff' }}
+          >
+            {page.description}
+          </p>
         </div>
       </Link>
     </animated.div>
@@ -286,4 +255,3 @@ function FeatureCard({
     </div>
   )
 }
-

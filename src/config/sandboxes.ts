@@ -8,10 +8,7 @@ export type SandboxConfig = {
   position: [number, number, number]
   rotation: [number, number, number]
   description: string
-  component: ReturnType<typeof dynamic>
-  // 2D-specific content (optional)
-  textBody?: string
-  images?: string[]
+  component: any // Using any for dynamic component for now to avoid strict type issues with dynamic imports in config
 }
 
 export const sandboxes: SandboxConfig[] = [
@@ -23,8 +20,7 @@ export const sandboxes: SandboxConfig[] = [
     position: [-2, 50, -2],
     rotation: [4, 5, 6],
     description: 'Learn more about our story and mission.',
-    component: dynamic(() => import('@/sandboxes/Basic')),
-    textBody: 'Founded with a vision to transform the industry, we have grown from a small team to a global organization.',
+    component: dynamic(() => import('@/sandboxes/business/AboutSandbox')),
   },
   {
     slug: 'services',
@@ -34,8 +30,7 @@ export const sandboxes: SandboxConfig[] = [
     position: [2, 70, 2],
     rotation: [7, 8, 9],
     description: 'Explore the services we offer.',
-    component: dynamic(() => import('@/sandboxes/Shoe')),
-    textBody: 'We offer a wide range of professional services tailored to your needs.',
+    component: dynamic(() => import('@/sandboxes/business/ServicesSandbox')),
   },
   {
     slug: 'products',
@@ -45,8 +40,7 @@ export const sandboxes: SandboxConfig[] = [
     position: [-3, 90, 2],
     rotation: [4, 2, 6],
     description: 'Browse our latest products.',
-    component: dynamic(() => import('@/sandboxes/Turtle')),
-    textBody: 'Discover our innovative product lineup designed for modern businesses.',
+    component: dynamic(() => import('@/sandboxes/business/ProductsSandbox')),
   },
   {
     slug: 'contact',
@@ -56,8 +50,7 @@ export const sandboxes: SandboxConfig[] = [
     position: [3, 60, -3],
     rotation: [10, 11, 12],
     description: 'Get in touch with us.',
-    component: dynamic(() => import('@/sandboxes/PingPong')),
-    textBody: 'We would love to hear from you. Reach out to us anytime.',
+    component: dynamic(() => import('@/sandboxes/business/ContactSandbox')),
   },
 ]
 

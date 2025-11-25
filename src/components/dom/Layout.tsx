@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { useSpring, animated } from '@react-spring/web'
 import { useAppStore } from '@/store'
 import { cn } from '@/utils'
-import ViewToggle from './ViewToggle'
+import HamburgerNav from './HamburgerNav'
 
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
 
@@ -94,8 +94,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     >
       {children}
 
-      {/* View mode toggle - only show after initial selection */}
-      <ViewToggle />
+      {/* Hamburger Navigation (includes view mode toggle) */}
+      <HamburgerNav />
 
       {/* Light/Dark mode toggle */}
       <ClickAndHold

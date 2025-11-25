@@ -13,6 +13,12 @@ interface AppState {
   resetTransition: () => void
   mode: 'light' | 'dark'
   setMode: (mode: 'light' | 'dark') => void
+  isNavOpen: boolean
+  setNavOpen: (isOpen: boolean) => void
+  activeSlug: string | null
+  setActiveSlug: (slug: string | null) => void
+  customBackAction: (() => void) | null
+  setCustomBackAction: (action: (() => void) | null) => void
   viewMode: ViewMode
   setViewMode: (viewMode: ViewMode) => void
   _hasHydrated: boolean
@@ -27,6 +33,12 @@ export const useAppStore = create<AppState>()(
       targetLetter: null,
       viewMode: null,
       _hasHydrated: false,
+      isNavOpen: false,
+      setNavOpen: (isOpen: boolean) => set({ isNavOpen: isOpen }),
+      activeSlug: null,
+      setActiveSlug: (slug: string | null) => set({ activeSlug: slug }),
+      customBackAction: null,
+      setCustomBackAction: (action) => set({ customBackAction: action }),
       startTransition: (letter: string) => {
         set({ transitionState: 'out', targetLetter: letter })
       },
