@@ -3,10 +3,11 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useSpring, animated } from '@react-spring/web'
-import { useAppStore } from '@/store'
+import { useAppStore, useHydration } from '@/store'
 import { Three } from '@/helpers/components/Three'
 import { sandboxes } from '@/config/sandboxes'
 import { cn } from '@/utils'
+import Generic2DPage from '@/components/dom/Generic2DPage'
 
 export default function SandboxPage() {
   const params = useParams<{ segments: string[] }>()
@@ -16,15 +17,18 @@ export default function SandboxPage() {
   const router = useRouter()
   const endTransition = useAppStore((state) => state.endTransition)
   const startTransition = useAppStore((state) => state.startTransition)
-  const customBackAction = useAppStore((state) => state.customBackAction)
+  const viewMode = useAppStore((state) => state.viewMode)
+  const hydrated = useHydration()
 
   const sandbox = sandboxes.find((s) => s.slug === slug)
   const Component = sandbox ? sandbox.component : null
 
   const [exiting, setExiting] = useState(false)
+
+  const pageTitleOpacity = !!detailSlug ? 0 : 1
   const springs = useSpring({
-    from: { x: '100vw' },
-    to: { x: exiting ? '-100px' : '0vw' },
+    from: { x: '100vw', opacity: Math.abs(pageTitleOpacity - 1) },
+    to: { x: exiting ? '-100px' : '0vw', opacity: pageTitleOpacity },
     config: { mass: 3, tension: 170, friction: 26, precision: 0.0001 },
   })
 
@@ -35,17 +39,7 @@ export default function SandboxPage() {
     }, 1000)
   }, [endTransition])
 
-  const handleBack = (e: React.MouseEvent) => {
-    // e.stopPropagation() might be needed if scroll controls interfere?
-    // But let's see if it even fires.
-    console.log('Back clicked. customBackAction:', !!customBackAction)
-
-    if (customBackAction) {
-      console.log(typeof customBackAction === 'function')
-      customBackAction()
-      return
-    }
-
+  const handleBack = () => {
     setExiting(true)
     startTransition(sandbox?.char || '')
     setTimeout(() => {
@@ -55,14 +49,44 @@ export default function SandboxPage() {
 
   const mode = useAppStore((state) => state.mode)
 
-  if (!Component || !slug)
-    return <div className='w-full h-full flex items-center justify-center text-white'>Not found</div>
+  // Wait for hydration before rendering view-mode-dependent content
+  if (!hydrated) {
+    return (
+      <div className='w-full h-full flex items-center justify-center'>
+        <div className='animate-pulse text-white/50'>Loading...</div>
+      </div>
+    )
+  }
 
+  // Handle not found
+  if (!sandbox || !slug) {
+    return (
+      <div
+        className={cn('w-full h-full flex items-center justify-center', mode === 'dark' ? 'text-white' : 'text-black')}
+      >
+        Not found
+      </div>
+    )
+  }
+
+  // Render 2D version if viewMode is '2d'
+  if (viewMode === '2d') {
+    return (
+      <Generic2DPage
+        title={sandbox.title}
+        description={sandbox.description}
+        slug={sandbox.slug}
+        color={sandbox.color}
+      />
+    )
+  }
+
+  // Render 3D version (default/existing behavior)
   return (
     <>
       <div className='absolute top-10 md:top-8 left-2 md:left-8 z-[10001] pointer-events-auto'>
         <animated.button
-          style={springs}
+          style={{ x: springs.x }}
           onClick={handleBack}
           className={cn(
             'cursor-pointer bg-transparent px-6 py-2 rounded-full font-bold transition-colors flex items-center gap-2',
@@ -81,11 +105,13 @@ export default function SandboxPage() {
 
       {/* Page Overlay UI */}
       <animated.div
-        style={{ opacity: springs.x.to((x) => (x === '0vw' ? 1 : 0)) }}
+        style={{
+          opacity: springs.x.to((x) => (x === '0vw' ? 1 : 0)),
+          display: pageTitleOpacity === 0 ? 'none' : 'block',
+        }}
         className={cn(
           'absolute bottom-12 left-8 z-10 pointer-events-none max-w-md transition-opacity duration-500',
           mode === 'dark' ? 'text-white' : 'text-black',
-          !!detailSlug ? 'hidden' : 'block',
         )}
       >
         <h1 className='text-6xl font-bold mb-4 tracking-tighter'>{sandbox.title}</h1>

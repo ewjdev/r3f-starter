@@ -5,33 +5,35 @@ import dynamic from 'next/dynamic'
 import { useSpring, animated } from '@react-spring/web'
 import { useAppStore } from '@/store'
 import { cn } from '@/utils'
-import HamburgerNav from './HamburgerNav'
+import ViewToggle from './ViewToggle'
 
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
 
-/**
- * DOM-based loading indicator for the canvas Suspense boundary.
- */
-const CanvasLoadingFallback = () => (
-  <div className='fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-10'>
-    <div className='w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin' />
-  </div>
-)
-const ClickAndHold = ({
-  isHolding,
-  onTrigger,
-  mode,
-}: {
-  isHolding: boolean
-  onTrigger: () => void
+type ClickAndHoldProps = {
+  onClickAndHold: () => void
   mode: 'light' | 'dark'
-}) => {
+  delay?: number
+}
+
+const ClickAndHold = ({ onClickAndHold, mode, delay = 350 }: ClickAndHoldProps) => {
+  const [isHolding, _setIsHolding] = useState(false)
+  const setIsHoldingRef = useRef<NodeJS.Timeout | null>(null)
+  const setIsHolding = (value: boolean) => {
+    if (setIsHoldingRef.current) {
+      clearTimeout(setIsHoldingRef.current)
+    }
+    let d = !value ? 0 : delay
+    setIsHoldingRef.current = setTimeout(() => {
+      _setIsHolding(value)
+    }, d)
+  }
   const { scale } = useSpring({
     scale: isHolding ? 1 : 0,
     config: { duration: isHolding ? 1350 : 350 },
     onRest: ({ finished, value }) => {
       if (finished && value.scale === 1) {
-        onTrigger()
+        onClickAndHold()
+        setIsHolding(false)
       }
     },
   })
@@ -39,62 +41,72 @@ const ClickAndHold = ({
   const color = mode === 'light' ? 'black' : 'white'
 
   return (
-    <div className='absolute top-0 left-0 w-full h-full pointer-events-none'>
-      <animated.div
-        className='absolute top-0 left-0 w-full h-[10px] origin-left'
-        style={{
-          backgroundColor: color,
-          scaleX: scale,
-        }}
-      />
+    <div className='absolute top-0 left-0 w-full h-full touch-none pointer-events-none' style={{ zIndex: 9999 }}>
       <div
-        className={cn(
-          'absolute top-2 left-1',
-          mode === 'light' ? 'text-black' : 'text-white',
-          isHolding ? 'opacity-100' : 'opacity-0',
-        )}
+        className='absolute top-0 left-0 w-32 h-16 pointer-events-auto'
+        onMouseDown={() => setIsHolding(true)}
+        onMouseUp={() => setIsHolding(false)}
+        onMouseLeave={() => setIsHolding(false)}
+        onTouchStart={() => setIsHolding(true)}
+        onTouchEnd={() => setIsHolding(false)}
       >
-        Hold to toggle {mode === 'light' ? 'dark' : 'light'} mode
+        <animated.div
+          className='absolute top-0 left-0 w-full h-[4px] origin-left'
+          style={{
+            backgroundColor: color,
+            scaleX: scale,
+          }}
+        />
+        <div
+          className={cn(
+            'absolute top-1 left-1 text-xs transition-opacity duration-200',
+            mode === 'light' ? 'text-black' : 'text-white',
+            isHolding ? 'opacity-100' : 'opacity-0',
+          )}
+        >
+          Hold for {mode === 'light' ? 'dark' : 'light'} mode
+        </div>
       </div>
     </div>
   )
 }
 
-const Layout = ({ children }) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   const ref = useRef(null)
   const mode = useAppStore((state) => state.mode)
   const setMode = useAppStore((state) => state.setMode)
+  const viewMode = useAppStore((state) => state.viewMode)
 
-  const [isHolding, _setIsHolding] = useState(false)
-  const setIsHoldingRef = useRef<NodeJS.Timeout | null>(null)
-  const setIsHolding = (value: boolean) => {
-    if (setIsHoldingRef.current) {
-      clearTimeout(setIsHoldingRef.current)
-    }
-    const d = !value ? 0 : 350
-    setIsHoldingRef.current = setTimeout(() => {
-      _setIsHolding(value)
-    }, d)
-  }
+  // Hide 3D scene in 2D mode but keep it mounted to preserve WebGL context
+  const hide3DScene = viewMode === '2d'
 
   return (
     <div
       ref={ref}
       style={{
         position: 'relative',
-        width: ' 100%',
+        width: '100%',
         height: '100%',
         overflow: 'auto',
         touchAction: 'auto',
         backgroundColor: mode === 'dark' ? 'black' : 'white',
       }}
-      onMouseDown={() => setIsHolding(true)}
-      onMouseUp={() => setIsHolding(false)}
-      onMouseLeave={() => setIsHolding(false)}
-      onTouchStart={() => setIsHolding(true)}
-      onTouchEnd={() => setIsHolding(false)}
     >
-      <Suspense fallback={<CanvasLoadingFallback />}>
+      {children}
+
+      {/* View mode toggle - only show after initial selection */}
+      <ViewToggle />
+
+      {/* Light/Dark mode toggle */}
+      <ClickAndHold
+        onClickAndHold={() => {
+          setMode(mode === 'light' ? 'dark' : 'light')
+        }}
+        mode={mode}
+      />
+
+      {/* 3D Scene - always mounted but hidden in 2D mode to preserve WebGL context */}
+      <Suspense fallback={null}>
         <Scene
           style={{
             position: 'fixed',
@@ -103,21 +115,13 @@ const Layout = ({ children }) => {
             width: '100vw',
             height: '100vh',
             pointerEvents: 'none',
+            visibility: hide3DScene ? 'hidden' : 'visible',
+            opacity: hide3DScene ? 0 : 1,
           }}
           eventSource={ref}
           eventPrefix='client'
         />
       </Suspense>
-      {children}
-      <HamburgerNav />
-      <ClickAndHold
-        isHolding={isHolding}
-        onTrigger={() => {
-          setMode(mode === 'light' ? 'dark' : 'light')
-          _setIsHolding(false)
-        }}
-        mode={mode}
-      />
     </div>
   )
 }
