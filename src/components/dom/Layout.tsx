@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useSpring, animated } from '@react-spring/web'
 import { useAppStore } from '@/store'
@@ -8,6 +8,15 @@ import { cn } from '@/utils'
 import HamburgerNav from './HamburgerNav'
 
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
+
+/**
+ * DOM-based loading indicator for the canvas Suspense boundary.
+ */
+const CanvasLoadingFallback = () => (
+  <div className='fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-10'>
+    <div className='w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin' />
+  </div>
+)
 const ClickAndHold = ({
   isHolding,
   onTrigger,
@@ -85,7 +94,7 @@ const Layout = ({ children }) => {
       onTouchStart={() => setIsHolding(true)}
       onTouchEnd={() => setIsHolding(false)}
     >
-      <Suspense fallback={null}>
+      <Suspense fallback={<CanvasLoadingFallback />}>
         <Scene
           style={{
             position: 'fixed',

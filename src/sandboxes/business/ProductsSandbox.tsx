@@ -7,6 +7,11 @@ import { useRouter } from 'next/navigation'
 import * as THREE from 'three'
 import { Root, Container, Text } from '@react-three/uikit'
 import { useAppStore } from '@/store'
+import { useMobileCheck } from '@/hooks/useMobileCheck'
+import { LoadingFallback } from '@/components/canvas/LoadingFallback'
+
+// Preload the shoe model at module level to avoid loading hitches
+useGLTF.preload('/models/shoe-draco.glb')
 
 // Increase item count to test performance, but stick to the requirement
 const ITEMS_PER_PAGE = 3
@@ -132,6 +137,7 @@ function ProductItem({
   selectedId,
   onSelect,
   theme,
+  isMobile,
 }: {
   index: number
   data: (typeof PRODUCTS)[0]
@@ -139,11 +145,15 @@ function ProductItem({
   selectedId: number | null
   onSelect: (id: number) => void
   theme: ProductTheme
+  isMobile: boolean
 }) {
   const group = useRef<THREE.Group>(null)
   const { scene } = useGLTF(data.model) as any
   const [hovered, setHovered] = useState(false)
   const { width, height } = useThree((state) => state.viewport)
+
+  // Pre-allocate reusable Vector3 to avoid GC pressure in useFrame
+  const tempVector = useRef(new THREE.Vector3())
 
   // Memoize the cloned scene
   const clonedScene = useMemo(() => {
@@ -168,8 +178,6 @@ function ProductItem({
 
     const isSelected = selectedId === data.id
     const isAnySelected = selectedId !== null
-    // Simple mobile check based on viewport width or window width
-    const isMobile = window.innerWidth < 600
 
     if (isSelected) {
       // DETAIL MODE: Center the product
@@ -190,17 +198,19 @@ function ProductItem({
       group.current.position.x = THREE.MathUtils.lerp(group.current.position.x, targetX, 0.1)
       group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, targetY, 0.1)
 
-      // Scale up
+      // Scale up - use pre-allocated vector to avoid GC pressure
       const targetScale = 5.5
-      group.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1)
+      tempVector.current.set(targetScale, targetScale, targetScale)
+      group.current.scale.lerp(tempVector.current, 0.1)
 
       // Rotate slowly
       group.current.rotation.y += delta * 0.5
 
       group.current.visible = true
     } else if (isAnySelected) {
-      // OTHER PRODUCTS: Move away/fade out
-      group.current.scale.lerp(new THREE.Vector3(0, 0, 0), 0.1)
+      // OTHER PRODUCTS: Move away/fade out - use pre-allocated vector
+      tempVector.current.set(0, 0, 0)
+      group.current.scale.lerp(tempVector.current, 0.1)
       if (group.current.scale.x < 0.1) group.current.visible = false
     } else {
       // LIST MODE: Original logic
@@ -213,7 +223,9 @@ function ProductItem({
 
       const s = Math.max(0, 1 - Math.abs(dist) * 1.5)
       const targetScale = s * 3.5
-      group.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1)
+      // Use pre-allocated vector to avoid GC pressure
+      tempVector.current.set(targetScale, targetScale, targetScale)
+      group.current.scale.lerp(tempVector.current, 0.1)
 
       group.current.rotation.y = Math.sin(state.clock.elapsedTime + index) * 0.1 + Math.PI / 4
 
@@ -281,13 +293,15 @@ function DetailOverlay({
   scrollData,
   onBack,
   theme,
+  isMobile,
 }: {
   data: (typeof PRODUCTS)[0]
   scrollData: { current: number }
   onBack: () => void
   theme: ProductTheme
+  isMobile: boolean
 }) {
-  const { width, height } = useThree((state) => state.viewport)
+  const { width } = useThree((state) => state.viewport)
   const group = useRef<THREE.Group>(null)
   const setCustomBackAction = useAppStore((state) => state.setCustomBackAction)
 
@@ -298,24 +312,23 @@ function DetailOverlay({
     return () => setCustomBackAction(null)
   }, [onBack, setCustomBackAction])
 
-  const isMobile = width < 10 // Approximation
   const mobileMaxWidth = 430
 
   return (
-    <group ref={group} position={[width > 10 ? width * 0.25 : 0, 0, 0]}>
-      <DetailSection index={0} scrollData={scrollData} title='Description' theme={theme}>
+    <group ref={group} position={[!isMobile ? width * 0.25 : 0, 0, 0]}>
+      <DetailSection index={0} scrollData={scrollData} title='Description' theme={theme} isMobile={isMobile}>
         <Text
           color={theme.textPrimary}
-          fontSize={width > 10 ? 96 : 48}
-          maxWidth={width > 10 ? 630 : mobileMaxWidth}
+          fontSize={!isMobile ? 96 : 48}
+          maxWidth={!isMobile ? 630 : mobileMaxWidth}
           lineHeight={1.5}
         >
           {data.description}
         </Text>
       </DetailSection>
 
-      <DetailSection index={1} scrollData={scrollData} title='Options' theme={theme}>
-        <Container flexDirection='row' gap={10} flexWrap='wrap' maxWidth={width > 10 ? 400 : mobileMaxWidth}>
+      <DetailSection index={1} scrollData={scrollData} title='Options' theme={theme} isMobile={isMobile}>
+        <Container flexDirection='row' gap={10} flexWrap='wrap' maxWidth={!isMobile ? 400 : mobileMaxWidth}>
           {['US 7', 'US 8', 'US 9', 'US 10', 'US 11'].map((size) => (
             <Container
               key={size}
@@ -335,7 +348,7 @@ function DetailOverlay({
         </Container>
       </DetailSection>
 
-      <DetailSection index={2} scrollData={scrollData} title='More Info' theme={theme}>
+      <DetailSection index={2} scrollData={scrollData} title='More Info' theme={theme} isMobile={isMobile}>
         <Container flexDirection='column' gap={8}>
           {data.details?.map((detail, i) => (
             <Text key={i} color={theme.mutedText} fontSize={16}>
@@ -345,7 +358,7 @@ function DetailOverlay({
         </Container>
       </DetailSection>
 
-      <DetailSection index={3} scrollData={scrollData} title='Actions' theme={theme}>
+      <DetailSection index={3} scrollData={scrollData} title='Actions' theme={theme} isMobile={isMobile}>
         <Container
           backgroundColor={data.color}
           padding={24}
@@ -368,12 +381,14 @@ function DetailSection({
   title,
   children,
   theme,
+  isMobile,
 }: {
   index: number
   scrollData: { current: number }
   title: string
   children: React.ReactNode
   theme: ProductTheme
+  isMobile: boolean
 }) {
   const group = useRef<THREE.Group>(null)
   const { width, height } = useThree((state) => state.viewport)
@@ -384,8 +399,6 @@ function DetailSection({
     const scroll = scrollData.current
     const dist = index - scroll
     const absDist = Math.abs(dist)
-
-    const isMobile = window.innerWidth < 600
 
     // Spacing factor depends on viewport height to ensure good separation
     // When scroll = index, Y = 0
@@ -421,7 +434,6 @@ function DetailSection({
     group.current.visible = absDist < 2.5
   })
 
-  const isMobile = width < 10
   const baseX = isMobile ? -width * 0.35 : -10
 
   return (
@@ -440,10 +452,12 @@ function ProductScene({
   selectedId,
   onSelectProduct,
   mode,
+  isMobile,
 }: {
   selectedId: number | null
   onSelectProduct: (id: number | null) => void
   mode: 'light' | 'dark'
+  isMobile: boolean
 }) {
   const scroll = useScroll()
   const scrollData = useRef({ current: 0 })
@@ -479,7 +493,7 @@ function ProductScene({
       <ambientLight intensity={0.5} />
       <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
       <pointLight position={[-10, -10, -10]} />
-      <Suspense fallback={null}>
+      <Suspense fallback={<LoadingFallback />}>
         {PRODUCTS.map((product, index) => (
           <ProductItem
             key={product.id}
@@ -487,13 +501,20 @@ function ProductScene({
             data={product}
             scrollData={scrollData.current}
             selectedId={selectedId}
-            onSelect={(id) => onSelectProduct(id)}
+            onSelect={onSelectProduct}
             theme={theme}
+            isMobile={isMobile}
           />
         ))}
       </Suspense>
       {selectedId !== null && selectedProduct && (
-        <DetailOverlay data={selectedProduct} scrollData={scrollData.current} onBack={handleBack} theme={theme} />
+        <DetailOverlay
+          data={selectedProduct}
+          scrollData={scrollData.current}
+          onBack={handleBack}
+          theme={theme}
+          isMobile={isMobile}
+        />
       )}
     </>
   )
@@ -507,6 +528,7 @@ type ProductsSandboxProps = {
 export default function ProductsSandbox({ detailSlug, parentSlug = 'products' }: ProductsSandboxProps) {
   const router = useRouter()
   const mode = useAppStore((state) => state.mode)
+  const isMobile = useMobileCheck()
   const routeSelectedId = detailSlug ? (PRODUCT_BY_SLUG.get(detailSlug)?.id ?? null) : null
   const [selectedId, setSelectedId] = useState<number | null>(() => routeSelectedId)
   const basePath = `/space/${parentSlug}`
@@ -546,13 +568,13 @@ export default function ProductsSandbox({ detailSlug, parentSlug = 'products' }:
     <>
       <OrthographicCamera makeDefault position={[0, 0, 10]} zoom={15} />
 
-      <Suspense fallback={null}>
+      <Suspense fallback={<LoadingFallback />}>
         <ScrollControls
           pages={selectedId !== null ? DETAIL_PAGES : LIST_PAGES}
           damping={0.2}
           style={{ pointerEvents: 'auto' }}
         >
-          <ProductScene selectedId={selectedId} onSelectProduct={handleSelectProduct} mode={mode} />
+          <ProductScene selectedId={selectedId} onSelectProduct={handleSelectProduct} mode={mode} isMobile={isMobile} />
         </ScrollControls>
       </Suspense>
     </>

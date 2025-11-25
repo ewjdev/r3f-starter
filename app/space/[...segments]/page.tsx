@@ -85,6 +85,7 @@ export default function SandboxPage() {
         className={cn(
           'absolute bottom-12 left-8 z-10 pointer-events-none max-w-md transition-opacity duration-500',
           mode === 'dark' ? 'text-white' : 'text-black',
+          !!detailSlug ? 'hidden' : 'block',
         )}
       >
         <h1 className='text-6xl font-bold mb-4 tracking-tighter'>{sandbox.title}</h1>

@@ -5,11 +5,12 @@ import * as THREE from 'three'
 
 const Ground = memo(function Ground() {
   const mode = useAppStore((state) => state.mode)
-  const [floor, normal] = useTexture(['/SurfaceImperfections003_1K_var1.jpg', '/SurfaceImperfections003_1K_Normal.jpg'])
+  console.log({ mode })
   return (
     <mesh rotation-x={-Math.PI / 2} position={[0, -6, 0]}>
       <planeGeometry args={[300, 300]} />
-      <MeshReflectorMaterial
+      <meshBasicMaterial depthTest color={mode === 'dark' ? '#000000' : '#ffffff'} transparent />
+      {/* <MeshReflectorMaterial
         blur={[400, 100]}
         resolution={512}
         mixBlur={0.5}
@@ -26,7 +27,7 @@ const Ground = memo(function Ground() {
         normalMap={normal}
         normalMapType={THREE.TangentSpaceNormalMap}
         normalScale={[2, 2]}
-      />
+      /> */}
     </mesh>
   )
 })

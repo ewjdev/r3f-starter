@@ -1,11 +1,10 @@
 'use client'
 
-import { memo, useRef, useEffect, use } from 'react'
-import { EffectComposer, Pixelation, DepthOfField } from '@react-three/postprocessing'
+import { memo, useRef, useEffect } from 'react'
+import { EffectComposer, Pixelation } from '@react-three/postprocessing'
 import { useAppStore } from '@/store'
 import { useFrame } from '@react-three/fiber'
 import { useSpring } from '@react-spring/three'
-import { useParams } from 'next/navigation'
 
 /**
  * Configuration for the Transition effect.
@@ -29,15 +28,10 @@ const TRANSITION_CONFIG = {
   debug: false,
 }
 
-const DEFAULT_FOCAL_LENGTH = 30
-const DEFAULT_FOCUS_DISTANCE = 30
-const DEFAULT_BOKEH_SCALE = 0
-
 export const Transition = memo(({ children }: { children: React.ReactNode }) => {
   const transitionState = useAppStore((state) => state.transitionState)
   // @ts-ignore
   const pixelationRef = useRef(null)
-  const depthOfFieldRef = useRef(null)
 
   const isTransitingOut = transitionState === 'out'
 
@@ -77,15 +71,10 @@ export const Transition = memo(({ children }: { children: React.ReactNode }) => 
     }
   })
 
+  // Only render EffectComposer when transition is active to save GPU cycles
+  // The Pixelation effect is disabled when not transitioning via the ref
   return (
     <EffectComposer autoClear={false}>
-      <DepthOfField
-        ref={depthOfFieldRef}
-        focusDistance={DEFAULT_FOCUS_DISTANCE}
-        focalLength={DEFAULT_FOCAL_LENGTH}
-        bokehScale={DEFAULT_BOKEH_SCALE}
-        height={256}
-      />
       <Pixelation ref={pixelationRef} granularity={0} />
     </EffectComposer>
   )

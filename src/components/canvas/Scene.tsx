@@ -1,9 +1,8 @@
 'use client'
 
 import { Canvas } from '@react-three/fiber'
-import { Hud, Preload } from '@react-three/drei'
+import { Preload } from '@react-three/drei'
 import { r3f } from '@/helpers/global'
-import * as THREE from 'three'
 import { Transition } from './Transition'
 import { ui } from '@/helpers/global'
 
@@ -14,7 +13,9 @@ export default function Scene({ ...props }) {
       <Canvas
         className='pointer-events-auto'
         {...props}
-        dpr={[1.5, 2]}
+        // Lower min DPR from 1.5 to 1 for better mobile performance
+        // Max stays at 2 for crisp rendering on high-DPI displays
+        dpr={[1, 2]}
         camera={{ position: [-20, 40, 30], fov: 45, near: 1, far: 60 }}
       >
         {/* @ts-ignore */}

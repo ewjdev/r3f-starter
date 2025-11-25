@@ -28,6 +28,7 @@ export default function HomeScene() {
     if (fogRef.current) {
       fogRef.current.near = mode === 'dark' ? 5 : 80
       fogRef.current.far = mode === 'dark' ? 65 : 80
+      fogRef.current.color = new THREE.Color(mode === 'dark' ? '#010101' : 'white')
 
       fogRef.current.needsUpdate = true
     }
