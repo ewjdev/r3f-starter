@@ -1,13 +1,30 @@
 {
-  "name": "react-three-next",
+  "name": "r3f-next-starter",
   "version": "2.0.0",
+  "description": "A production-ready starter template for building immersive 3D web experiences with React Three Fiber, Next.js 16, and TypeScript.",
   "authors": [
     "Renaud ROHLINGER <https://twitter.com/onirenaud>"
   ],
   "license": "MIT",
   "private": true,
+  "type": "module",
   "engines": {
     "node": ">=22.x"
+  },
+  "keywords": [
+    "react",
+    "three.js",
+    "react-three-fiber",
+    "r3f",
+    "next.js",
+    "3d",
+    "webgl",
+    "starter",
+    "template"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/r3f-next-starter"
   },
   "dependencies": {
     "@react-spring/three": "^10.0.3",
@@ -53,11 +70,16 @@
     "url-loader": "^4.1.1"
   },
   "scripts": {
-    "lint": "next lint --fix --dir app",
     "dev": "next dev --experimental-https",
     "build": "next build",
-    "analyze": "ANALYZE=true next build",
     "start": "next start",
-    "prettier": "npx prettier --list-different \"./src/**/*.{ts,tsx,md}\" \"./app/**/*.{ts,tsx,md}\"\""
+    "lint": "next lint --fix --dir app --dir src",
+    "analyze": "ANALYZE=true next build",
+    "prettier": "npx prettier --list-different \"./src/**/*.{ts,tsx,md}\" \"./app/**/*.{ts,tsx,md}\"",
+    "prettier:fix": "npx prettier --write \"./src/**/*.{ts,tsx,md}\" \"./app/**/*.{ts,tsx,md}\"",
+    "new:sandbox": "node scripts/new-sandbox.js",
+    "new:component": "node scripts/new-component.js",
+    "setup": "node scripts/setup.js",
+    "reset": "node scripts/reset.js"
   }
 }
